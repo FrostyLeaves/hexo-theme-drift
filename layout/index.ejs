@@ -1,0 +1,36 @@
+<% const hero = theme.hero || {}; %>
+<% if (hero.enabled) { %>
+<%
+const heroTitle = String(hero.title || config.title || '');
+const subtitle = hero.subtitle || config.subtitle || config.description;
+%>
+<section class="hero" style="--hero-height: <%= hero.height || '100vh' %>;">
+  <div class="hero__inner">
+    <h1 class="hero__title px" aria-label="<%= heroTitle %>"><%- letter_spans(heroTitle, 'hero__ch') %></h1>
+    <% if (subtitle) { %>
+      <p class="hero__subtitle"<% if (hero.typing) { %> data-typing="<%= subtitle %>"<% } %>><%= subtitle %></p>
+      <% if (hero.typing) { %><script>document.currentScript.previousElementSibling.style.visibility = 'hidden';</script><% } %>
+    <% } %>
+    <% if (hero.stats !== false) { %>
+    <ul class="hero__stats">
+      <li class="badge badge--blue px" data-count="<%= site.posts.length %>"><span class="badge__num"><%= site.posts.length %></span> <%= __('hero.posts') %></li>
+      <li class="badge badge--green px" data-count="<%= site.categories.length %>"><span class="badge__num"><%= site.categories.length %></span> <%= __('hero.categories') %></li>
+      <li class="badge badge--gold px" data-count="<%= site.tags.length %>"><span class="badge__num"><%= site.tags.length %></span> <%= __('hero.tags') %></li>
+    </ul>
+    <% } %>
+  </div>
+  <a class="hero__scroll" href="#posts" aria-label="<%= __('post.scroll_down') %>">
+    <svg viewBox="0 0 10 5" width="40" height="20" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="2" height="1"/><rect x="8" y="0" width="2" height="1"/><rect x="1" y="1" width="2" height="1"/><rect x="7" y="1" width="2" height="1"/><rect x="2" y="2" width="2" height="1"/><rect x="6" y="2" width="2" height="1"/><rect x="3" y="3" width="4" height="1"/><rect x="4" y="4" width="2" height="1"/></svg>
+  </a>
+</section>
+<% } %>
+<div class="container home" id="posts">
+  <% if (!hero.enabled && theme.index && theme.index.intro && (config.description || config.author)) { %>
+  <section class="intro">
+    <p class="intro__author px"><%= config.author %></p>
+    <% if (config.description) { %><p class="intro__desc"><%= config.description %></p><% } %>
+  </section>
+  <% } %>
+  <%- partial('_partial/post-list', { posts: page.posts }) %>
+  <%- partial('_partial/pagination') %>
+</div>

@@ -1,0 +1,20 @@
+<% const list = posts && posts.toArray ? posts.toArray() : (posts || []); %>
+<ol class="post-list">
+  <% list.forEach(function (post, i) {
+    const cats = post.categories && post.categories.toArray ? post.categories.toArray() : [];
+    const tone = category_tone(cats.length ? cats[0].name : post.title);
+    const excerpt = post_excerpt(post, theme.index && theme.index.excerpt_length);
+    const number = post_number(post);
+  %>
+    <li class="post-card card tone-<%= tone.palette %>" data-tilt style="--i:<%= i %>">
+      <div class="card__inner">
+        <span class="card__corner card__corner--tl px" aria-hidden="true"><span class="card__num"><%= number %></span></span>
+        <span class="card__corner card__corner--br px" aria-hidden="true"><span class="card__num"><%= number %></span></span>
+        <h2 class="card__title px"><a class="card__link" href="<%- url_for(post.path) %>" aria-label="<%= post.title %>"><%- letter_spans(post.title, 'ch') %></a></h2>
+        <% if (excerpt) { %><p class="card__excerpt"><%= excerpt %></p><% } %>
+        <%- partial('_partial/post-meta', { post: post, full: false }) %>
+        <span class="card__foil" aria-hidden="true"></span>
+      </div>
+    </li>
+  <% }); %>
+</ol>

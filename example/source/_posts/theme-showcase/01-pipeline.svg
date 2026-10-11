@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="400" viewBox="0 0 1080 400" class="theme-diagram" data-theme-svg="1" role="img" aria-labelledby="01-pipeline-title 01-pipeline-desc">
+<title id="01-pipeline-title">一次绘制从 CPU 录制到 GPU 执行的三段流程</title>
+<desc id="01-pipeline-desc">三个并排的框：CPU 录制命令缓冲区，提交到队列，GPU 前端取出并执行；下方时间线示意 CPU 与 GPU 可以重叠工作。</desc>
+<style>
+.theme-diagram {
+  --d-bg: var(--diagram-background, #ffffff);
+  --d-ink: var(--diagram-text, #383838);
+  --d-accent: var(--diagram-accent, #2bbc8a);
+  --d-muted: color-mix(in srgb, var(--d-ink) 68%, var(--d-bg));
+  --d-border: color-mix(in srgb, var(--d-ink) 19%, var(--d-bg));
+  --d-surface: color-mix(in srgb, var(--d-ink) 3%, var(--d-bg));
+  --d-shadow: color-mix(in srgb, #000000 35%, var(--d-bg));
+  --d-teal: var(--diagram-teal, color-mix(in srgb, var(--d-accent) 76%, var(--d-ink)));
+  --d-blue: var(--diagram-blue, color-mix(in srgb, var(--d-accent) 28%, #6c91bc));
+  --d-purple: var(--diagram-purple, color-mix(in srgb, var(--d-accent) 15%, #a18ab9));
+  --d-orange: var(--diagram-orange, color-mix(in srgb, var(--d-accent) 10%, #d3a462));
+  font-family: var(--diagram-font, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif);
+}
+.theme-diagram text { font-family: inherit; }
+</style>
+<defs>
+  <marker id="01-pipeline-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0 0 L8 4 L0 8 Z" fill="context-stroke"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="1080" height="400" fill="var(--d-bg)" stroke="none"/>
+<rect x="36" y="31" width="5" height="30" rx="2" fill="var(--d-accent)" stroke="none"/>
+<text x="56" y="56" font-size="30" font-weight="650" fill="var(--d-ink)">一次绘制如何到达 GPU</text>
+<text x="1044" y="52" text-anchor="end" font-size="17" font-weight="600" fill="var(--d-muted)">FIG. 01</text>
+<text x="36" y="91" font-size="20" fill="var(--d-muted)">三个阶段各自独立推进；提交之后 CPU 不必等待 GPU 完成。</text>
+<path d="M36 112 L1044 112" fill="none" stroke="var(--d-border)" stroke-width="1"/>
+
+<!-- stage 1: CPU -->
+<rect x="36" y="150" width="300" height="120" rx="8" fill="color-mix(in srgb, var(--d-teal) 9%, var(--d-bg))" stroke="color-mix(in srgb, var(--d-teal) 40%, var(--d-bg))" stroke-width="1.3"/>
+<text x="56" y="184" font-size="23" font-weight="600" fill="var(--d-ink)">① CPU 录制</text>
+<text x="56" y="214" font-size="18" fill="var(--d-muted)">命令缓冲区 A：绑定管线与资源</text>
+<text x="56" y="242" font-size="18" fill="var(--d-muted)">DrawIndexed：6 个索引，1 个实例</text>
+
+<!-- stage 2: submit -->
+<rect x="390" y="150" width="300" height="120" rx="8" fill="color-mix(in srgb, var(--d-blue) 9%, var(--d-bg))" stroke="color-mix(in srgb, var(--d-blue) 40%, var(--d-bg))" stroke-width="1.3"/>
+<text x="410" y="184" font-size="23" font-weight="600" fill="var(--d-ink)">② 提交</text>
+<text x="410" y="214" font-size="18" fill="var(--d-muted)">图形队列：逻辑上的提交批次</text>
+<text x="410" y="242" font-size="18" fill="var(--d-muted)">关联等待 / 完成信号</text>
+
+<!-- stage 3: GPU -->
+<rect x="744" y="150" width="300" height="120" rx="8" fill="color-mix(in srgb, var(--d-purple) 9%, var(--d-bg))" stroke="color-mix(in srgb, var(--d-purple) 40%, var(--d-bg))" stroke-width="1.3"/>
+<text x="764" y="184" font-size="23" font-weight="600" fill="var(--d-ink)">③ GPU 执行</text>
+<text x="764" y="214" font-size="18" fill="var(--d-muted)">前端取得硬件可读的命令</text>
+<text x="764" y="242" font-size="18" fill="var(--d-muted)">分发到各个处理单元</text>
+
+<!-- arrows -->
+<path d="M336 210 L388 210" fill="none" stroke="var(--d-muted)" stroke-width="1.6" marker-end="url(#01-pipeline-arrow)"/>
+<path d="M690 210 L742 210" fill="none" stroke="var(--d-muted)" stroke-width="1.6" marker-end="url(#01-pipeline-arrow)"/>
+
+<!-- timeline -->
+<text x="36" y="318" font-size="18" font-weight="600" fill="var(--d-ink)">CPU</text>
+<rect x="110" y="300" width="260" height="28" rx="6" fill="var(--d-surface)" stroke="var(--d-border)" stroke-width="1.3"/>
+<text x="240" y="319" text-anchor="middle" font-size="16" fill="var(--d-ink)">录制帧 N</text>
+<rect x="390" y="300" width="260" height="28" rx="6" fill="var(--d-surface)" stroke="var(--d-border)" stroke-width="1.3"/>
+<text x="520" y="319" text-anchor="middle" font-size="16" fill="var(--d-ink)">准备帧 N+1</text>
+<text x="36" y="366" font-size="18" font-weight="600" fill="var(--d-ink)">GPU</text>
+<rect x="390" y="348" width="300" height="28" rx="6" fill="color-mix(in srgb, var(--d-teal) 18%, var(--d-bg))" stroke="color-mix(in srgb, var(--d-teal) 40%, var(--d-bg))" stroke-width="1.3"/>
+<text x="540" y="367" text-anchor="middle" font-size="16" fill="var(--d-ink)">执行帧 N</text>
+<rect x="710" y="348" width="260" height="28" rx="6" fill="color-mix(in srgb, var(--d-teal) 18%, var(--d-bg))" stroke="color-mix(in srgb, var(--d-teal) 40%, var(--d-bg))" stroke-width="1.3"/>
+<text x="840" y="367" text-anchor="middle" font-size="16" fill="var(--d-ink)">执行帧 N+1</text>
+<path d="M110 390 L1044 390" fill="none" stroke="var(--d-border)" stroke-width="1" marker-end="url(#01-pipeline-arrow)"/>
+<text x="1044" y="384" text-anchor="end" font-size="14" fill="var(--d-muted)">时间</text>
+</svg>

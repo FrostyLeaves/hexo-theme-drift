@@ -1,0 +1,53 @@
+nav:
+  home: 首页
+  posts: 文章
+  categories: 分类
+  tags: 标签
+  archives: 归档
+hero:
+  posts: 篇文章
+  categories: 个分类
+  tags: 个标签
+post:
+  toc: 目录
+  updated: 更新于
+  words: 字
+  minutes: 分钟
+  prev: 上一篇
+  next: 下一篇
+  license_prefix: 本文采用
+  license_suffix: 许可
+  copy: 复制
+  copied: 已复制
+  scroll_down: 向下滚动
+  tags: 标签
+archive:
+  title: 归档
+  total_prefix: 共
+  total_suffix: 篇
+category:
+  title: 分类
+tag:
+  title: 标签
+footer:
+  powered: 由 Hexo 驱动
+palette:
+  toggle: 切换配色
+  auto: 自动
+  blue: 湖蓝
+  green: 青翠
+  gold: 琥珀
+  red: 绯红
+background:
+  toggle: 切换背景
+  sky: 天空
+  ocean: 海洋
+mode:
+  toggle: 切换日夜
+  day: 日间
+  night: 夜间
+error404:
+  title: 页面不存在
+  description: 你访问的页面可能已被移动或删除。
+  home: 返回首页
+skip: 跳到正文

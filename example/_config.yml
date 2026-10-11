@@ -1,0 +1,71 @@
+# Drift example site — placeholder content only, used to preview and test the theme.
+# Nothing in here is real: no author, no domain, no deploy target, no comments.
+
+title: Drift
+subtitle: 像素之间，记录所想
+description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+keywords:
+author: Tester
+language: zh-CN
+timezone: Asia/Shanghai
+
+url: http://localhost:4000
+root: /
+permalink: :year/:month/:day/:title/
+permalink_defaults:
+pretty_urls:
+  trailing_index: true
+  trailing_html: true
+
+source_dir: source
+public_dir: public
+tag_dir: tags
+archive_dir: archives
+category_dir: categories
+code_dir: downloads/code
+i18n_dir: :lang
+skip_render:
+
+new_post_name: :title.md
+default_layout: post
+titlecase: false
+external_link:
+  enable: true
+  field: site
+  exclude: ''
+filename_case: 0
+render_drafts: false
+post_asset_folder: true     # theme_svg and asset_img need the per-post asset folder
+relative_link: false
+future: true
+syntax_highlighter: highlight.js
+highlight:
+  line_number: true
+  auto_detect: false        # keep unlabelled fences as plain text
+  tab_replace: ''
+  wrap: true
+  hljs: false
+
+index_generator:
+  path: ''
+  per_page: 3               # small on purpose so the pagination shows up
+  order_by: -date
+
+default_category: uncategorized
+category_map:
+tag_map:
+meta_generator: true
+date_format: YYYY-MM-DD
+time_format: HH:mm:ss
+updated_option: mtime
+per_page: 3
+pagination_dir: page
+
+include:
+exclude:
+ignore:
+  # The linked theme contains this example site; exclude it to avoid recursive scans/watchers.
+  - '**/themes/drift/example{,/**}'
+
+# Build/server hooks link themes/drift to the repository root.
+theme: drift

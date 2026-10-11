@@ -1,0 +1,26 @@
+/* Fusion Pixel 12px (SIL OFL 1.1, see ../fonts/FusionPixel-LICENSES.txt): the display face for
+   titles, navigation, buttons and numbers. Subset of the proportional zh_hans build: ASCII, Latin-1,
+   GB2312 level 1 + 2 hanzi, CJK/Western punctuation, arrows, box drawing, a few symbols (226 KB).
+   Regenerate with tools/make-pixel-font.py. Use it at multiples of 12px (24/36/48/72) so the pixel
+   grid lands on whole screen pixels. `block` avoids headings flashing in the fallback font first. */
+@font-face {
+  font-family: "Fusion Pixel 12px";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: local("Fusion Pixel 12px Prop zh-Hans"), local("Fusion-Pixel-12px-Prop-zh-Hans-Regular"),
+       url("../fonts/FusionPixel12-Prop.subset.woff2") format("woff2");
+}
+
+/* Maple Mono (SIL OFL 1.1, see ../fonts/OFL.txt). Latin + punctuation + box-drawing subset,
+   used for code blocks only. Readers who have the font installed never download it. */
+@font-face {
+  font-family: "Maple Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local("Maple Mono"), local("MapleMono-Regular"),
+       url("../fonts/MapleMono-Regular.subset.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0100-017F, U+2000-206F, U+2070-209F, U+20A0-20CF,
+                 U+2190-21FF, U+2200-22FF, U+2500-259F, U+25A0-25FF, U+2B00-2B5F;
+}

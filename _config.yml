@@ -1,0 +1,137 @@
+# Drift theme configuration — a Balatro-flavoured Hexo theme.
+# Override any key from the site: put the same keys under `theme_config:` in the site _config.yml,
+# or create `_config.drift.yml` next to it (Hexo >= 5 merges it automatically).
+
+# Navigation. Keys are looked up in languages/*.yml (nav.<key>), values are paths.
+nav:
+  posts: /archives/
+  categories: /categories/
+  tags: /tags/
+
+# Full-screen opening on the home page: the site title set in pixel type over the swirl.
+hero:
+  enabled: true
+  title:                    # defaults to the site title
+  subtitle:                 # defaults to the site subtitle, then description
+  typing: true              # typewriter effect for the subtitle
+  stats: true               # post / category / tag counters shown as badges
+  height: 100vh             # 100vh, 70vh, 560px ...
+
+# Home page list.
+index:
+  intro: true               # short author/description block (only shown when hero is disabled)
+  excerpt_length: 140
+
+# Article page.
+post:
+  toc: true
+  toc_max_depth: 3
+  show_updated: false
+  reading_speed:
+    cjk: 400                # CJK characters per minute
+    latin: 200              # words per minute
+  license_links:
+    "CC BY-NC 4.0": https://creativecommons.org/licenses/by-nc/4.0/
+    "CC BY 4.0": https://creativecommons.org/licenses/by/4.0/
+    "CC BY-SA 4.0": https://creativecommons.org/licenses/by-sa/4.0/
+    "CC BY-NC-SA 4.0": https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+# ---------------------------------------------------------------------------
+# Colour. Day/night controls interface contrast; palettes control its accents. Each palette
+# feeds three colours to the backdrop scenes (main, second, dark) and one accent colour to the
+# interface. Names are free; labels come from languages/*.yml (palette.<name>) or a `label` key here.
+# ---------------------------------------------------------------------------
+palettes:
+  blue:  { colors: ['#009dff', '#1f4f77', '#1c2628'], accent: '#009dff' }
+  green: { colors: ['#4bc292', '#1f5e4a', '#1c2628'], accent: '#4bc292' }
+  gold:  { colors: ['#f3b958', '#7e5a1e', '#1c2628'], accent: '#f3b958' }
+  red:   { colors: ['#fe5f55', '#6e2a26', '#1c2628'], accent: '#fe5f55' }
+
+# Which palette each kind of page gets. A post can override it with `palette: gold` in its
+# front-matter. `auto` hashes the post's first category into `pool`, so every category always
+# lands on the same colour. Readers can cycle palettes with the disc button in the header.
+palette:
+  home: blue
+  post: auto
+  pool: [blue, green, gold, red]
+  archive: blue
+  category: blue
+  tag: green
+  page: green
+  error: red
+
+# The animated pixel backdrop (WebGL; falls back to a static gradient without it). Two scenes ship
+# with the theme, each with a night and a day version: `sky` (stars at night, a sea of clouds by
+# day) and `ocean`. Readers switch scene and day/night with the two buttons next to the palette
+# disc; both choices are remembered in their browser. Day mode also flips the interface to light
+# panels. Nature keeps its own colours; the palette only colours the light.
+background:
+  enable: true
+  style: sky                # default scene: sky | ocean
+  styles: [sky, ocean]      # scene cycle order; a single entry hides the scene button
+  mode: night               # default: night | day
+  speed: 1                  # 1 is the calm default; 0.5 slower, 2 faster
+  fps: 30                   # frame cap; the scenes are slow, 30 is plenty
+  pixel_filter: 740         # shader pixels along the screen diagonal; lower = chunkier pixels
+
+# Motion. Everything here switches off automatically when the reader prefers reduced motion.
+juice:
+  tilt: true                # cards tilt toward the pointer
+  wobble: true              # idle sway on list cards and on the letters of the hero title
+  foil: true                # holographic sheen on hovered cards
+  text: titles              # animated lettering: hero (opening title only) | titles (+ post/page titles
+                            # deal in and wave, header brand waves on hover) | all (+ card titles ripple on hover)
+
+# Comments (Utterances, https://utteranc.es). Install the Utterances app on the repo first.
+utterances:
+  enabled: false
+  repo:                     # owner/repo, e.g. your-name/your-name.github.io
+  issue_term: title
+  label: utterances
+
+footer:
+  start_year:               # empty = current year only
+  links: {}                 # label: url, e.g. GitHub: https://github.com/your-name
+
+favicon:
+  ico: /images/favicon.ico
+  png: /images/favicon-192x192.png
+  apple: /images/apple-touch-icon.png
+
+# ---------------------------------------------------------------------------
+# Companion plugins (scripts/). A key with the same name in the site _config.yml wins.
+# ---------------------------------------------------------------------------
+
+# Theme-aware SVG diagrams ({% theme_svg %}); see docs/guide.en.md#svg-contract.
+theme_svg:
+  strict: true              # false: log contract violations instead of failing the build
+  colors:                   # palette baked into standalone SVG files (open / download)
+    background: '#222426'
+    text: '#e6e4e0'
+    accent: '#f3b958'
+    teal: '#4bc292'         # the four category colours; leave them out and diagrams derive their own from the accent
+    blue: '#009dff'
+    purple: '#8867a5'
+    orange: '#f3b958'
+  # css_variables:          # only when a different theme supplies other variable names
+  #   background: --color-background
+  #   text: --color-text
+  #   accent: --color-accent-1
+  #   teal: --color-diagram-teal     # blue / purple / orange likewise
+
+# Text diagrams rendered through Kroki once and cached as contract SVG.
+diagrams:
+  enable: true
+  server: https://kroki.io
+  languages: [ditaa]
+  cache_dir: source/_diagrams   # relative to the site root; commit it
+  timeout: 30000
+
+# Build-time WebP conversion (needs `npm install sharp` in the site).
+webp:
+  enable: true
+  quality: 82
+  max_width: 1600
+  min_size: 30720           # bytes; smaller originals are left alone
+  extensions: [jpg, jpeg, png]
+  exclude: []               # regular expressions matched against the output path; favicons are always skipped

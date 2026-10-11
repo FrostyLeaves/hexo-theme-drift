@@ -1,0 +1,7 @@
+<% const u = theme.utterances || {}; %>
+<% if (page.comments !== false && u.enabled && u.repo) { %>
+<section class="comments panel" id="comments"
+  data-repo="<%= u.repo %>"
+  data-issue-term="<%= u.issue_term || 'title' %>"
+  data-label="<%= u.label || '' %>"></section>
+<% } %>

@@ -1,0 +1,18 @@
+<%
+const startYear = theme.footer && theme.footer.start_year;
+const thisYear = new Date().getFullYear();
+const years = startYear && startYear < thisYear ? startYear + '–' + thisYear : thisYear;
+%>
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <span class="site-footer__mark" aria-hidden="true"><svg viewBox="0 0 12 12" width="24" height="24" shape-rendering="crispEdges" fill="currentColor"><rect x="5" y="1" width="2" height="10"/><rect x="1" y="5" width="10" height="2"/><rect x="3" y="3" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="3" y="8" width="1" height="1"/><rect x="8" y="8" width="1" height="1"/></svg></span>
+    <span>© <%= years %> <%= config.author %></span>
+    <span class="site-footer__links">
+      <% if (theme.footer && theme.footer.links) { for (const name in theme.footer.links) { %>
+        <a href="<%= theme.footer.links[name] %>" target="_blank" rel="noopener"><%= name %></a>
+      <% } } %>
+      <% if (config.feed && config.feed.path) { %><a href="<%- url_for(config.feed.path) %>">RSS</a><% } %>
+      <a href="https://hexo.io" target="_blank" rel="noopener"><%= __('footer.powered') %></a>
+    </span>
+  </div>
+</footer>

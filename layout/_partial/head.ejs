@@ -1,0 +1,82 @@
+<%
+let pageTitle = page.title;
+if (page.type === 'categories') pageTitle = __('category.title');
+else if (page.type === 'tags') pageTitle = __('tag.title');
+else if (is_category()) pageTitle = page.category;
+else if (is_tag()) pageTitle = page.tag;
+else if (is_archive()) pageTitle = __('archive.title');
+const fullTitle = pageTitle && !is_home() ? pageTitle + ' · ' + config.title : config.title;
+const description = page.description || (is_post() ? '' : config.description);
+
+const palettes = theme.palettes || {};
+const names = Object.keys(palettes);
+const autoPalette = page_palette(page);
+const bg = background_setup();
+const bgCfg = theme.background || {};
+const labels = {
+  auto: __('palette.auto'), toggle: __('palette.toggle'), copy: __('post.copy'), copied: __('post.copied'),
+  sceneToggle: __('background.toggle'), scenes: {},
+  modeToggle: __('mode.toggle'), modes: { day: __('mode.day'), night: __('mode.night') }
+};
+names.forEach(function (name) { labels[name] = palette_label(name); });
+bg.styles.forEach(function (name) { labels.scenes[name] = background_label(name); });
+function rule(name, i) {
+  const p = palettes[name] || {};
+  const c = p.colors || [];
+  const c1 = c[0] || '#fe5f55', c2 = c[1] || c1, c3 = c[2] || '#1c2628';
+  const body = '--accent:' + (p.accent || c1) + ';--bg-1:' + c1 + ';--bg-2:' + c2 + ';--bg-3:' + c3;
+  // .tone-<name>: the palette's accent as --tone, for category pills and card corner marks
+  return (i === 0 ? ':root,' : '') + ':root[data-palette="' + name + '"]{' + body + '}\n.tone-' + name + '{--tone:' + (p.accent || c1) + '}';
+}
+%>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title><%= fullTitle %></title>
+  <% if (description) { %><meta name="description" content="<%= description %>"><% } %>
+  <meta name="theme-color" content="<%= bg.mode === 'day' ? '#f0eee8' : '#191a1c' %>">
+  <%- open_graph({ twitter_card: 'summary', description: description || undefined }) %>
+  <% if (theme.favicon) { %>
+    <% if (theme.favicon.ico) { %><link rel="icon" href="<%- url_for(theme.favicon.ico) %>" sizes="any"><% } %>
+    <% if (theme.favicon.png) { %><link rel="icon" type="image/png" sizes="192x192" href="<%- url_for(theme.favicon.png) %>"><% } %>
+    <% if (theme.favicon.apple) { %><link rel="apple-touch-icon" sizes="180x180" href="<%- url_for(theme.favicon.apple) %>"><% } %>
+  <% } %>
+  <% if (config.feed && config.feed.path) { %><link rel="alternate" type="application/atom+xml" title="<%= config.title %>" href="<%- url_for(config.feed.path) %>"><% } %>
+  <%- css('css/fonts') %>
+  <%- css('css/main') %>
+  <style id="palette-css"><%- names.map(rule).join('\n') %></style>
+  <script>
+    (function () {
+      // Keep reader preferences when upgrading from the theme's former name.
+      function migrate(storage, names) {
+        names.forEach(function (name) {
+          var key = 'drift-' + name;
+          if (storage.getItem(key) !== null) return;
+          var previous = storage.getItem('doubleye-' + name);
+          if (previous !== null) storage.setItem(key, previous);
+        });
+      }
+      try { migrate(localStorage, ['palette', 'background', 'mode']); } catch (e) { /* storage may be blocked */ }
+      try { migrate(sessionStorage, ['bg-time']); } catch (e) { /* storage may be blocked */ }
+      var root = document.documentElement;
+      var names = <%- JSON.stringify(names) %>, auto = '<%= autoPalette %>', pref = null;
+      try { pref = localStorage.getItem('drift-palette'); } catch (e) { pref = null; }
+      if (names.indexOf(pref) < 0) pref = 'auto';
+      root.setAttribute('data-palette', pref === 'auto' ? auto : pref);
+      root.setAttribute('data-palette-pref', pref);
+      var scenes = <%- JSON.stringify(bg.styles) %>, scene = null, mode = null;
+      try { scene = localStorage.getItem('drift-background'); mode = localStorage.getItem('drift-mode'); } catch (e) { scene = null; mode = null; }
+      if (scenes.indexOf(scene) < 0) scene = '<%= bg.style %>';
+      if (mode !== 'day' && mode !== 'night') mode = '<%= bg.mode %>';
+      root.setAttribute('data-background', scene);
+      root.setAttribute('data-mode', mode);
+    })();
+    window.__THEME = {
+      palettes: <%- JSON.stringify(palettes) %>,
+      auto: '<%= autoPalette %>',
+      labels: <%- JSON.stringify(labels) %>,
+      background: <%- JSON.stringify({ enable: bg.enable, style: bg.style, styles: bg.styles, mode: bg.mode, speed: bgCfg.speed, fps: bgCfg.fps, pixel_filter: bgCfg.pixel_filter }) %>,
+      juice: <%- JSON.stringify(theme.juice || {}) %>
+    };
+  </script>
+</head>

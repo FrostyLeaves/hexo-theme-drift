@@ -1,0 +1,52 @@
+{
+  "name": "hexo-theme-drift",
+  "version": "2.0.0",
+  "description": "A pixel-inspired Hexo theme with sky and ocean backdrops, day/night modes, card layouts, and tools for long technical posts.",
+  "author": "FrostyLeaves",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FrostyLeaves/hexo-theme-drift.git"
+  },
+  "homepage": "https://github.com/FrostyLeaves/hexo-theme-drift#readme",
+  "bugs": {
+    "url": "https://github.com/FrostyLeaves/hexo-theme-drift/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "hexo",
+    "hexo-theme",
+    "balatro",
+    "pixel",
+    "webgl",
+    "svg",
+    "ditaa",
+    "webp"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "hexo": ">=7.0.0",
+    "hexo-renderer-ejs": ">=2.0.0"
+  },
+  "optionalDependencies": {
+    "sharp": "^0.35.5"
+  },
+  "scripts": {
+    "check:svg": "node tools/check-theme-svg.js",
+    "font": "python tools/make-pixel-font.py",
+    "favicon": "python tools/make-favicon.py"
+  },
+  "files": [
+    "_config.yml",
+    "README.zh-CN.md",
+    "docs",
+    "languages",
+    "layout",
+    "lib",
+    "scripts",
+    "source",
+    "tools",
+    "example"
+  ]
+}

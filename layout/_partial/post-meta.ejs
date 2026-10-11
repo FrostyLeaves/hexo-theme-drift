@@ -1,0 +1,16 @@
+<%
+const rt = reading_time(post);
+const cats = post.categories && post.categories.toArray ? post.categories.toArray() : [];
+const showUpdated = full && theme.post && theme.post.show_updated && post.updated && post.updated.diff(post.date, 'days') > 0;
+%>
+<div class="post-meta">
+  <time class="badge badge--date px" datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY-MM-DD') %></time>
+  <% cats.forEach(function (cat) { const t = category_tone(cat.name); %>
+    <a class="seal tone-<%= t.palette %> px" href="<%- url_for(cat.path) %>"><span class="seal__dot" aria-hidden="true"></span><%= cat.name %></a>
+  <% }); %>
+  <span class="badge badge--blue px post-meta__words"><%= rt.words.toLocaleString('en-US') %> <%= __('post.words') %></span>
+  <span class="badge badge--red px"><%= rt.minutes %> <%= __('post.minutes') %></span>
+  <% if (showUpdated) { %>
+    <span class="badge badge--muted px"><%= __('post.updated') %> <time datetime="<%= date_xml(post.updated) %>"><%= date(post.updated, 'YYYY-MM-DD') %></time></span>
+  <% } %>
+</div>

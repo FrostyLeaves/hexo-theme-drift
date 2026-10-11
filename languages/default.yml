@@ -1,0 +1,53 @@
+nav:
+  home: Home
+  posts: Posts
+  categories: Categories
+  tags: Tags
+  archives: Archives
+hero:
+  posts: posts
+  categories: categories
+  tags: tags
+post:
+  toc: Contents
+  updated: Updated
+  words: words
+  minutes: min
+  prev: Newer
+  next: Older
+  license_prefix: Licensed under
+  license_suffix: ""
+  copy: Copy
+  copied: Copied
+  scroll_down: Scroll down
+  tags: Tags
+archive:
+  title: Archives
+  total_prefix: ""
+  total_suffix: posts
+category:
+  title: Categories
+tag:
+  title: Tags
+footer:
+  powered: Powered by Hexo
+palette:
+  toggle: Palette
+  auto: auto
+  blue: Lake
+  green: Jade
+  gold: Amber
+  red: Crimson
+background:
+  toggle: Backdrop
+  sky: Sky
+  ocean: Ocean
+mode:
+  toggle: Day / night
+  day: Day
+  night: Night
+error404:
+  title: Page not found
+  description: The page you are looking for may have been moved or removed.
+  home: Back to home
+skip: Skip to content
