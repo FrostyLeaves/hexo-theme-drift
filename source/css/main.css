@@ -68,7 +68,8 @@
 
   --content-width: 46rem;
   --toc-width: 15rem;
-  --header-height: 64px;
+  --header-min-height: 64px;
+  --header-height: var(--header-min-height);
   --radius: 12px;
   --radius-card: 10px;
   --radius-btn: 8px;
@@ -110,6 +111,7 @@
    base
    ========================================================================== */
 *, *::before, *::after { box-sizing: border-box; }
+[data-ui-lang]:empty { display: none; }
 
 html {
   background: var(--page-bg);
@@ -202,9 +204,10 @@ button { font: inherit; color: inherit; }
 }
 
 /* .card is the thing that tilts; .card__inner is the painted face (and the thing that sways) */
-.card { position: relative; display: block; --rx: 0; --ry: 0; --mx: 50%; --my: 50%; --lift: 0px; }
+.card { position: relative; display: block; --rx: 0; --ry: 0; --mx: 50%; --my: 50%; --px: 50%; --py: 50%; --lift: 0px; }
 .card__inner {
   position: relative; display: block;
+  isolation: isolate;
   background: var(--card); color: var(--card-ink);
   border: 2px solid var(--card-line); border-radius: var(--radius-card);
   box-shadow: 0 6px 0 var(--shadow);
@@ -222,19 +225,94 @@ body.juice-tilt .card:hover { --lift: -6px; }
 body:not(.juice-tilt) .card { transition: transform 0.18s ease; }
 body:not(.juice-tilt) .card:hover { transform: translateY(-6px); }
 
-/* holographic sheen, driven by --mx/--my from the pointer */
+/* Configurable card reflections. All overlays leave links and text selectable. */
 .card__foil {
-  position: absolute; inset: 0; pointer-events: none; opacity: 0; border-radius: inherit;
-  background:
-    radial-gradient(circle at var(--mx) var(--my), rgba(255, 255, 255, 0.6), transparent 38%),
-    linear-gradient(115deg, rgba(254, 95, 85, 0.42), rgba(243, 185, 88, 0.42), rgba(75, 194, 146, 0.42),
-                    rgba(0, 157, 255, 0.42), rgba(136, 103, 165, 0.42), rgba(254, 95, 85, 0.42));
-  background-size: 100% 100%, 320% 320%;
-  background-position: 0 0, var(--mx) var(--my);
-  mix-blend-mode: multiply;
+  position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; border-radius: inherit;
   transition: opacity 0.25s ease;
 }
-body.juice-foil .card:hover .card__foil { opacity: 1; }
+/* Balatro-inspired editions: metallic rings, a spectral lattice, a prism wash and a dark negative. */
+body[data-card-effect="foil"] .card__foil {
+  background:
+    radial-gradient(ellipse at var(--mx) var(--my), rgba(255, 255, 255, 0.75), transparent 60%),
+    repeating-radial-gradient(ellipse at var(--mx) var(--my),
+      rgba(55, 96, 194, 0.3) 0 3px, rgba(213, 243, 255, 0.7) 4px 5px, rgba(98, 148, 223, 0.38) 6px 9px),
+    linear-gradient(125deg, rgba(32, 83, 183, 0.32), rgba(174, 214, 249, 0.18), rgba(80, 113, 208, 0.4));
+  box-shadow: inset 0 0 0 2px rgba(210, 238, 255, 0.8);
+}
+body[data-card-effect="holographic"] .card__foil {
+  background:
+    radial-gradient(ellipse at var(--mx) var(--my), rgba(255, 255, 255, 0.55), transparent 55%),
+    repeating-linear-gradient(60deg, transparent 0 27px, rgba(255, 255, 255, 0.65) 28px 30px, transparent 31px 56px),
+    repeating-linear-gradient(-60deg, transparent 0 27px, rgba(255, 255, 255, 0.6) 28px 30px, transparent 31px 56px),
+    repeating-linear-gradient(0deg, transparent 0 47px, rgba(255, 255, 255, 0.55) 48px 50px, transparent 51px 98px),
+    repeating-conic-gradient(from 30deg, rgba(255, 141, 198, 0.35) 0deg 60deg, rgba(114, 222, 248, 0.4) 60deg 120deg,
+      rgba(201, 163, 255, 0.32) 120deg 180deg);
+  background-size: 100% 100%, 112px 196px, 112px 196px, 112px 196px, 112px 196px;
+  background-position: 0 0, var(--mx) var(--my), var(--mx) var(--my), var(--mx) var(--my), var(--mx) var(--my);
+}
+body[data-card-effect="polychrome"] .card__foil {
+  background:
+    radial-gradient(circle at var(--mx) var(--my), rgba(255, 255, 255, 0.6), transparent 38%),
+    conic-gradient(from 135deg, rgba(255, 92, 168, 0.42), rgba(189, 137, 255, 0.44), rgba(77, 191, 255, 0.46),
+      rgba(97, 233, 173, 0.4), rgba(255, 221, 111, 0.42), rgba(255, 145, 113, 0.4), rgba(255, 92, 168, 0.42));
+  background-size: 100% 100%, 200% 200%;
+  background-position: 0 0, var(--mx) var(--my);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.7);
+}
+body[data-card-effect="negative"] .card__foil {
+  background:
+    radial-gradient(ellipse at var(--mx) var(--my), rgba(115, 220, 215, 0.16), transparent 60%),
+    linear-gradient(120deg, transparent 25%, rgba(149, 145, 233, 0.16) 45%, rgba(112, 211, 226, 0.14) 50%, transparent 65%);
+  background-size: 100% 100%, 220% 220%;
+  background-position: 0 0, var(--mx) var(--my);
+  box-shadow: inset 0 0 0 2px rgba(171, 192, 240, 0.22);
+}
+/* Switch ink and paper together so the negative remains readable throughout the hover.
+   Keep it local to the card; no filter on text, illustrations, the page or its hard shadow. */
+@media screen and (hover: hover) and (prefers-reduced-motion: no-preference) {
+  body.juice-foil .card:is(:hover, :focus-within) .card__excerpt {
+    color: var(--card-ink);
+  }
+  body.juice-foil[data-card-effect="negative"] .card:is(:hover, :focus-within) .card__inner {
+    --card: #182632;
+    --card-ink: #eef4da;
+    --card-muted: #c3d3de;
+    --card-line: #7c90b7;
+    --card-surface: #293c50;
+    --accent-lip: #c0f5de;
+  }
+  body.juice-foil[data-card-effect="negative"] .card:is(:hover, :focus-within) .seal {
+    color: var(--card);
+  }
+}
+body[data-card-effect="glass"] .card__foil {
+  background:
+    radial-gradient(ellipse at var(--mx) var(--my), rgba(255, 255, 255, 0.7), transparent 55%),
+    linear-gradient(115deg, rgba(90, 155, 180, 0.16) 24%, rgba(255, 255, 255, 0.5) 25% 29%,
+      rgba(255, 255, 255, 0.12) 30% 33%, rgba(90, 155, 180, 0.12) 34% 53%, rgba(255, 255, 255, 0.55) 54% 55%,
+      rgba(90, 155, 180, 0.14) 56%);
+  background-size: 100% 100%, 220% 220%;
+  background-position: 0 0, var(--mx) var(--my);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.65), inset 0 -12px 24px rgba(43, 102, 132, 0.08);
+}
+body[data-card-effect="pixel-glass"] .card__foil {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 15px, rgba(64, 129, 150, 0.08) 15px 16px),
+    repeating-linear-gradient(90deg, transparent 0 15px, rgba(64, 129, 150, 0.08) 15px 16px),
+    linear-gradient(135deg, rgba(120, 213, 236, 0.2), rgba(73, 131, 166, 0.1));
+  box-shadow: inset 4px 4px rgba(255, 255, 255, 0.65), inset -4px -4px rgba(78, 135, 158, 0.16);
+}
+body[data-card-effect="pixel-glass"] .card__foil::before {
+  content: ""; position: absolute; inset: 0;
+  background: rgba(255, 255, 255, 0.64);
+  /* Repeating staircase bands: 16px steps, moved in whole tiles by theme.js. */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Cpath fill='white' d='M0 0H32V16H48V32H64V48H80V64H96V80H112V96H128V128H96V112H80V96H64V80H48V64H32V48H16V32H0Z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Cpath fill='white' d='M0 0H32V16H48V32H64V48H80V64H96V80H112V96H128V128H96V112H80V96H64V80H48V64H32V48H16V32H0Z'/%3E%3C/svg%3E");
+  -webkit-mask-size: 128px 128px; mask-size: 128px 128px;
+  -webkit-mask-position: var(--px) var(--py); mask-position: var(--px) var(--py);
+}
+body.juice-foil .card:hover .card__foil,
+body.juice-foil .card:focus-within .card__foil { opacity: 1; }
 
 .btn, .pagination .page-number, .pagination .extend {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.4em;
@@ -311,14 +389,14 @@ body.juice-foil .card:hover .card__foil { opacity: 1; }
    ========================================================================== */
 .site-header {
   position: sticky; top: 0; z-index: 30;
-  flex: none; min-height: var(--header-height);
+  flex: none; min-height: var(--header-min-height);
   background: var(--header-bg);
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   border-bottom: 2px solid var(--panel-line-2);
   transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 .site-header__inner {
-  max-width: 1180px; min-height: calc(var(--header-height) - 2px); margin: 0 auto; padding-inline: 20px;
+  max-width: 1180px; min-height: calc(var(--header-min-height) - 2px); margin: 0 auto; padding-inline: 20px;
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
 }
 .site-brand {
@@ -334,8 +412,9 @@ body.juice-foil .card:hover .card__foil { opacity: 1; }
 .site-brand:hover { color: var(--accent); }
 .site-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; min-width: 0; max-width: 100%; gap: 0.6rem; }
 .site-nav > * { flex: none; }
+.site-controls { display: flex; align-items: center; gap: 0.6rem; }
 
-.palette-toggle, .scene-toggle {
+.palette-toggle, .scene-toggle, .language-toggle {
   display: inline-flex; align-items: center; gap: 0.5rem;
   white-space: nowrap;
   height: 40px; margin-left: 0.3rem; padding: 0 12px 0 4px;
@@ -344,14 +423,16 @@ body.juice-foil .card:hover .card__foil { opacity: 1; }
   box-shadow: 0 4px 0 var(--shadow);
   transition: transform 0.12s ease, box-shadow 0.12s ease, border-color var(--t-palette) ease;
 }
-.palette-toggle:hover, .scene-toggle:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--shadow); border-color: var(--accent); }
-.palette-toggle:active, .scene-toggle:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--shadow); }
+.palette-toggle:hover, .scene-toggle:hover, .language-toggle:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--shadow); border-color: var(--accent); }
+.palette-toggle:active, .scene-toggle:active, .language-toggle:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--shadow); }
+.language-toggle { justify-content: center; min-width: 40px; padding: 0 6px 3px; font-size: 20px; line-height: 28px; }
 .scene-toggle__icon { flex: none; width: 28px; height: 28px; display: grid; place-items: center; color: var(--accent-text); transition: color var(--t-palette) ease; }
 .scene-icon, .mode-icon { display: none; width: 24px; height: 24px; }
 :root[data-background="sky"] .scene-icon--sky,
 :root[data-background="ocean"] .scene-icon--ocean,
-:root[data-mode="night"] .mode-icon--night,
-:root[data-mode="day"] .mode-icon--day { display: block; }
+:root[data-mode-pref="auto"] .mode-icon--auto,
+:root:not([data-mode-pref="auto"])[data-mode="night"] .mode-icon--night,
+:root:not([data-mode-pref="auto"])[data-mode="day"] .mode-icon--day { display: block; }
 .scene-toggle__label { font-size: 24px; line-height: 32px; padding-bottom: 3px; }
 /* palette disc: three sectors showing the palette's main, second and dark colours */
 .palette-toggle__disc {
@@ -777,12 +858,13 @@ figure.highlight .params, figure.highlight .subst { color: var(--code-fg); }
 }
 
 @media (max-width: 760px) {
-  :root { --header-height: 104px; }
+  :root { --header-min-height: 104px; }
   .site-header__inner { flex-wrap: wrap; justify-content: center; padding: 8px 12px 10px; gap: 0.4rem 0.5rem; }
   .site-brand { flex: 0 0 100%; text-align: center; font-size: 24px; line-height: 32px; }
   .site-nav { justify-content: center; gap: 0.4rem; }
+  .site-controls { gap: 0.4rem; }
   .btn--nav { min-height: 36px; padding: 0 8px 4px; }
-  .palette-toggle, .scene-toggle { height: 36px; margin-left: 0; }
+  .palette-toggle, .scene-toggle, .language-toggle { height: 36px; margin-left: 0; }
 }
 
 @media (max-width: 640px) {
@@ -813,6 +895,7 @@ figure.highlight .params, figure.highlight .subst { color: var(--code-fg); }
 
 @media (hover: none) {
   .code-copy { opacity: 1; }
+  .card__foil { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

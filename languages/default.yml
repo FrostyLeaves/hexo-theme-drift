@@ -4,11 +4,17 @@ nav:
   categories: Categories
   tags: Tags
   archives: Archives
+language:
+  toggle: Language
+  name: English
+  short: EN
+pagination: Pagination
 hero:
   posts: posts
   categories: categories
   tags: tags
 post:
+  navigation: Post navigation
   toc: Contents
   updated: Updated
   words: words
@@ -44,6 +50,7 @@ background:
   ocean: Ocean
 mode:
   toggle: Day / night
+  auto: Auto
   day: Day
   night: Night
 error404:

@@ -14,7 +14,7 @@
 | **日夜切换 · 天空与海洋** | **随主题变色的 SVG 与 ditaa 图示** |
 | [![日间模式下的 Drift，背景为像素海面](docs/images/home-day.png)](docs/images/home-day.png) | [![浅色文章面板中的内联 SVG 和 ditaa 文本图](docs/images/diagrams.png)](docs/images/diagrams.png) |
 
-动态背景 · 四套调色板 · 代码复制 · 阅读时长 · 可选 WebP · 遵循系统减少动画设置
+动态背景 · 自动日夜切换 · 四套调色板 · 中英文切换 · Balatro 风格卡面 · 代码复制 · 阅读时长 · 可选 WebP · 遵循系统减少动画设置
 
 ## 手机上的样子
 

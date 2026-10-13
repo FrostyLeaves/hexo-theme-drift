@@ -8,9 +8,9 @@ const showUpdated = full && theme.post && theme.post.show_updated && post.update
   <% cats.forEach(function (cat) { const t = category_tone(cat.name); %>
     <a class="seal tone-<%= t.palette %> px" href="<%- url_for(cat.path) %>"><span class="seal__dot" aria-hidden="true"></span><%= cat.name %></a>
   <% }); %>
-  <span class="badge badge--blue px post-meta__words"><%= rt.words.toLocaleString('en-US') %> <%= __('post.words') %></span>
-  <span class="badge badge--red px"><%= rt.minutes %> <%= __('post.minutes') %></span>
+  <span class="badge badge--blue px post-meta__words"><%= rt.words.toLocaleString('en-US') %> <%- ui_text('post.words') %></span>
+  <span class="badge badge--red px"><%= rt.minutes %> <%- ui_text('post.minutes') %></span>
   <% if (showUpdated) { %>
-    <span class="badge badge--muted px"><%= __('post.updated') %> <time datetime="<%= date_xml(post.updated) %>"><%= date(post.updated, 'YYYY-MM-DD') %></time></span>
+    <span class="badge badge--muted px"><%- ui_text('post.updated') %> <time datetime="<%= date_xml(post.updated) %>"><%= date(post.updated, 'YYYY-MM-DD') %></time></span>
   <% } %>
 </div>

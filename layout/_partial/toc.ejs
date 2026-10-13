@@ -7,8 +7,8 @@ const tocHtml = toc(page.content, {
 });
 %>
 <% if (tocHtml) { %>
-<nav class="toc panel" aria-label="<%= __('post.toc') %>">
-  <div class="toc__title px"><%= __('post.toc') %></div>
+<nav class="toc panel" data-i18n-aria-label="post.toc" aria-label="<%= ui_label('post.toc') %>">
+  <div class="toc__title px"><%- ui_text('post.toc') %></div>
   <%- tocHtml %>
 </nav>
 <% } %>

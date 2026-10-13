@@ -87,7 +87,7 @@ hero:
 background:
   style: sky
   styles: [sky, ocean]
-  mode: night
+  mode: auto
   speed: 1
 palette:
   home: blue
@@ -101,25 +101,66 @@ post:
 | 配置项 | 用途 |
 | --- | --- |
 | `nav` | 导航名称与路径；名称从 `languages/*.yml` 读取。 |
+| `i18n.enable / default / languages` | 界面语言切换、默认语言与可选语言。 |
 | `hero.enabled / title / subtitle / typing / stats / height` | 首页开屏、标题、打字效果、计数与高度。 |
 | `index.intro / excerpt_length` | 关闭开屏后的简介；卡牌摘要长度。 |
 | `post.toc / toc_max_depth / show_updated / reading_speed / license_links` | 目录、文章信息、阅读时长估算与许可证链接。 |
 | `palettes` | 各套调色板的背景色与强调色。 |
 | `palette.home / post / pool / archive / category / tag / page / error` | 各类页面的配色；`post: auto` 按首个分类从 `pool` 中固定选择。 |
 | `background.enable / style / styles / mode / speed / fps / pixel_filter` | 天空或海洋、初始昼夜、动画速度、帧率与像素分辨率。 |
-| `juice.tilt / wobble / foil / text` | 卡牌倾斜、待机摇摆、流光与文字动效。 |
+| `juice.tilt / wobble / foil / text` | 卡牌倾斜、待机摇摆、悬停反光风格与文字动效。 |
 | `utterances` | 使用 GitHub 的评论系统。 |
 | `footer.start_year / links` | 版权起始年份与页脚链接。 |
 | `favicon` | ICO、PNG 与 Apple touch 图标。 |
 | `theme_svg / diagrams / webp` | 主题内置的构建插件。 |
 
+### 界面语言
+
+顶栏的 `中 / EN` 按钮用于切换界面语言，选择会保存在浏览器中，刷新和打开其他页面时继续生效。默认支持中文和英文，默认语言取站点 `language` 的第一项，也可单独指定：
+
+```yaml
+i18n:
+  enable: true
+  default: zh-CN
+  languages: [zh-CN, en]
+```
+
+切换范围包括导航、统计、阅读信息、目录、复制按钮、页脚、错误页以及外观按钮的文案。文章标题、正文、分类和标签名称使用作者提供的内容，不自动翻译。文章可用 front matter 的 `lang` 标注正文语言。
+
+`enable: false` 时使用默认语言并隐藏切换按钮；`languages` 只保留一项时也隐藏按钮。增加语言时，在主题 `languages/<语言代码>.yml` 中补充词条并加入 `languages`；用 `language.name` 和 `language.short` 定义该语言的名称与按钮缩写，缺少的词条回退到英文 `default.yml`。
+
 ### 外观与动画
 
-- `sky`、`ocean` 各有日间与夜间场景。读者可在顶栏切换场景、昼夜和调色板，选择会保存在浏览器中。昼夜不跟随系统配色设置。
+- `sky`、`ocean` 各有日间与夜间场景。读者可在顶栏切换场景、昼夜和调色板，选择会保存在浏览器中。昼夜按钮依次切换“自动 → 日间 → 夜间”；“自动”会实时响应系统配色变化。
+- `background.mode` 默认是 `auto`（随系统），也可设为 `day` 或 `night`。浏览器中已有的手动选择优先；切回“自动”即可恢复自动切换。关闭动态背景后仍可切换昼夜。
 - 默认调色板是 `blue`、`green`、`gold`、`red`。在 `palettes` 下增加配色，在此处或 `languages/` 中定义标签，再把名称加入 `palette.pool` 即可参与文章自动配色。
 - `background.styles` 只留一项时隐藏场景按钮。`background.enable: false` 使用静态渐变；浏览器不支持 WebGL 时也会回退到渐变。
 - `juice.text` 支持 `hero`、`titles`（默认）、`all`。各动效项设为 `false` 可关闭。主题遵循系统的减少动画设置，标签页隐藏时暂停背景动画。
 - 日间颜色在 `source/css/main.css` 的 `:root[data-mode="day"]` 中。修改令牌时保留图示依赖的三个 `--color-*` 输入变量。
+
+卡牌效果通过 `juice.foil` 选择，卡牌倾斜仍由 `juice.tilt` 单独控制。随主题提供的默认配置为 `pixel-glass`，例如可改成参考 Balatro 的负片效果：
+
+```yaml
+juice:
+  tilt: true
+  foil: negative
+```
+
+| `juice.foil` | 效果 |
+| --- | --- |
+| `foil` | 蓝色金属箔，以鼠标位置为中心的细密同心反光纹。 |
+| `holographic` | 镭射，粉彩光谱与三角晶格随鼠标移动。 |
+| `polychrome` | 多彩棱镜，大面积彩虹色域与移动高光。 |
+| `negative` | 负片，深蓝卡面、浅薄荷色文字与青紫反光。 |
+| `glass` | 玻璃反光，柔和高光与斜向亮带。 |
+| `pixel-glass` | 像素玻璃，方格纹理、阶梯形反光条，按 16 像素步进跟随鼠标。 |
+| `none` | 关闭卡面效果。 |
+
+前四种效果参考 Balatro 卡牌版本的视觉特征，以适合文章卡牌阅读的 CSS 实现，反光位于文字下方。鼠标悬停或用键盘聚焦卡牌链接时生效，离开后恢复普通卡面。
+
+![Drift 文章卡牌的金属箔、镭射、多彩棱镜与负片效果对照](images/card-editions.png)
+
+旧配置 `foil: true` 等同于 `holographic`，`foil: false` 等同于 `none`，未配置或无效值回退到 `holographic`。卡面效果不拦截链接操作；触摸设备和系统的减少动画模式下关闭，也不增加图片下载或持续渲染循环。
 
 ### 文章 front matter
 

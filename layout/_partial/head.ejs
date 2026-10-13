@@ -1,10 +1,12 @@
 <%
 let pageTitle = page.title;
-if (page.type === 'categories') pageTitle = __('category.title');
-else if (page.type === 'tags') pageTitle = __('tag.title');
+let pageTitleKey = '';
+if (page.type === 'categories') pageTitleKey = 'category.title';
+else if (page.type === 'tags') pageTitleKey = 'tag.title';
 else if (is_category()) pageTitle = page.category;
 else if (is_tag()) pageTitle = page.tag;
-else if (is_archive()) pageTitle = __('archive.title');
+else if (is_archive()) pageTitleKey = 'archive.title';
+if (pageTitleKey) pageTitle = ui_label(pageTitleKey);
 const fullTitle = pageTitle && !is_home() ? pageTitle + ' · ' + config.title : config.title;
 const description = page.description || (is_post() ? '' : config.description);
 
@@ -13,10 +15,11 @@ const names = Object.keys(palettes);
 const autoPalette = page_palette(page);
 const bg = background_setup();
 const bgCfg = theme.background || {};
+const languageSetup = language_setup();
 const labels = {
-  auto: __('palette.auto'), toggle: __('palette.toggle'), copy: __('post.copy'), copied: __('post.copied'),
-  sceneToggle: __('background.toggle'), scenes: {},
-  modeToggle: __('mode.toggle'), modes: { day: __('mode.day'), night: __('mode.night') }
+  auto: ui_label('palette.auto'), toggle: ui_label('palette.toggle'), copy: ui_label('post.copy'), copied: ui_label('post.copied'),
+  sceneToggle: ui_label('background.toggle'), scenes: {},
+  modeToggle: ui_label('mode.toggle'), modes: { auto: ui_label('mode.auto'), day: ui_label('mode.day'), night: ui_label('mode.night') }
 };
 names.forEach(function (name) { labels[name] = palette_label(name); });
 bg.styles.forEach(function (name) { labels.scenes[name] = background_label(name); });
@@ -32,7 +35,7 @@ function rule(name, i) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title><%= fullTitle %></title>
+  <title<% if (pageTitleKey) { %> data-i18n-document-title="<%= pageTitleKey %>" data-site-title="<%= config.title %>"<% } %>><%= fullTitle %></title>
   <% if (description) { %><meta name="description" content="<%= description %>"><% } %>
   <meta name="theme-color" content="<%= bg.mode === 'day' ? '#f0eee8' : '#191a1c' %>">
   <%- open_graph({ twitter_card: 'summary', description: description || undefined }) %>
@@ -45,6 +48,7 @@ function rule(name, i) {
   <%- css('css/fonts') %>
   <%- css('css/main') %>
   <style id="palette-css"><%- names.map(rule).join('\n') %></style>
+  <style id="language-css"><%- languageSetup.languages.map(lang => ':root[lang="' + lang + '"] [data-ui-lang]:not([data-ui-lang="' + lang + '"]){display:none}').join('\n') %></style>
   <script>
     (function () {
       // Keep reader preferences when upgrading from the theme's former name.
@@ -59,24 +63,32 @@ function rule(name, i) {
       try { migrate(localStorage, ['palette', 'background', 'mode']); } catch (e) { /* storage may be blocked */ }
       try { migrate(sessionStorage, ['bg-time']); } catch (e) { /* storage may be blocked */ }
       var root = document.documentElement;
-      var names = <%- JSON.stringify(names) %>, auto = '<%= autoPalette %>', pref = null;
+      var languages = <%- theme_json(languageSetup.languages) %>, language = null;
+      try { language = localStorage.getItem('drift-language'); } catch (e) { /* storage may be blocked */ }
+      root.lang = languages.indexOf(language) >= 0 ? language : <%- theme_json(languageSetup.default) %>;
+      var names = <%- theme_json(names) %>, auto = '<%= autoPalette %>', pref = null;
       try { pref = localStorage.getItem('drift-palette'); } catch (e) { pref = null; }
       if (names.indexOf(pref) < 0) pref = 'auto';
       root.setAttribute('data-palette', pref === 'auto' ? auto : pref);
       root.setAttribute('data-palette-pref', pref);
-      var scenes = <%- JSON.stringify(bg.styles) %>, scene = null, mode = null;
+      var scenes = <%- theme_json(bg.styles) %>, scene = null, mode = null;
       try { scene = localStorage.getItem('drift-background'); mode = localStorage.getItem('drift-mode'); } catch (e) { scene = null; mode = null; }
       if (scenes.indexOf(scene) < 0) scene = '<%= bg.style %>';
-      if (mode !== 'day' && mode !== 'night') mode = '<%= bg.mode %>';
+      if (mode !== 'auto' && mode !== 'day' && mode !== 'night') mode = '<%= bg.mode %>';
+      root.setAttribute('data-mode-pref', mode);
+      if (mode === 'auto') mode = window.matchMedia && !window.matchMedia('(prefers-color-scheme: dark)').matches ? 'day' : 'night';
       root.setAttribute('data-background', scene);
       root.setAttribute('data-mode', mode);
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', mode === 'day' ? '#f0eee8' : '#191a1c');
     })();
     window.__THEME = {
-      palettes: <%- JSON.stringify(palettes) %>,
+      palettes: <%- theme_json(palettes) %>,
       auto: '<%= autoPalette %>',
-      labels: <%- JSON.stringify(labels) %>,
-      background: <%- JSON.stringify({ enable: bg.enable, style: bg.style, styles: bg.styles, mode: bg.mode, speed: bgCfg.speed, fps: bgCfg.fps, pixel_filter: bgCfg.pixel_filter }) %>,
-      juice: <%- JSON.stringify(theme.juice || {}) %>
+      labels: <%- theme_json(labels) %>,
+      background: <%- theme_json({ enable: bg.enable, style: bg.style, styles: bg.styles, mode: bg.mode, speed: bgCfg.speed, fps: bgCfg.fps, pixel_filter: bgCfg.pixel_filter }) %>,
+      juice: <%- theme_json(theme.juice || {}) %>,
+      i18n: <%- theme_json(languageSetup) %>
     };
   </script>
 </head>

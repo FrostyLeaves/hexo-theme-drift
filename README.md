@@ -14,7 +14,7 @@ Pixel skies, playing-card layouts, and room for long reads. A theme for [Hexo](h
 | **Day & night · sky & ocean** | **SVG & ditaa diagrams that follow the theme** |
 | [![Drift in day mode with a pixel ocean backdrop](docs/images/home-day.png)](docs/images/home-day.png) | [![Inline SVG and ditaa diagrams in a light article panel](docs/images/diagrams.png)](docs/images/diagrams.png) |
 
-Animated backgrounds · Four palettes · Code copy · Reading time · Optional WebP · Reduced-motion support
+Animated backgrounds · Automatic day/night · Four palettes · Chinese/English switcher · Balatro-inspired card finishes · Code copy · Reading time · Optional WebP · Reduced-motion support
 
 ## On your phone
 

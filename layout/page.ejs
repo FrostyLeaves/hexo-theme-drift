@@ -1,13 +1,13 @@
 <% if (page.type === 'categories') { %>
 <div class="container taxonomy-page">
-  <header class="page-header"><h1 class="px title-anim" aria-label="<%= __('category.title') %>"><%- letter_spans(__('category.title'), 'ch') %></h1></header>
+  <header class="page-header"><h1 class="px title-anim" data-i18n-aria-label="category.title" aria-label="<%= ui_label('category.title') %>"><%- ui_text('category.title', 'ch') %></h1></header>
   <div class="taxonomy taxonomy--categories panel">
     <%- list_categories({ show_count: true, class: 'category', depth: 0 }) %>
   </div>
 </div>
 <% } else if (page.type === 'tags') { %>
 <div class="container taxonomy-page">
-  <header class="page-header"><h1 class="px title-anim" aria-label="<%= __('tag.title') %>"><%- letter_spans(__('tag.title'), 'ch') %></h1></header>
+  <header class="page-header"><h1 class="px title-anim" data-i18n-aria-label="tag.title" aria-label="<%= ui_label('tag.title') %>"><%- ui_text('tag.title', 'ch') %></h1></header>
   <div class="taxonomy taxonomy--tags panel">
     <%- list_tags({ show_count: true, class: 'tag' }) %>
   </div>
@@ -15,6 +15,6 @@
 <% } else { %>
 <article class="page container">
   <header class="page-header"><h1 class="px title-anim" aria-label="<%= page.title %>"><%- letter_spans(page.title, 'ch') %></h1></header>
-  <div class="post-body panel"><div class="post-content"><%- page.content %></div></div>
+  <div class="post-body panel"><div class="post-content" lang="<%= page.lang && page.lang !== 'default' ? page.lang : language_setup().default %>"><%- page.content %></div></div>
 </article>
 <% } %>

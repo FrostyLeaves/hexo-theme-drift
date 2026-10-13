@@ -1,5 +1,6 @@
 <%
-let title = __('archive.title');
+let title = ui_label('archive.title');
+const translateTitle = !is_category() && !is_tag();
 if (is_category()) title = page.category;
 else if (is_tag()) title = page.tag;
 const list = page.posts && page.posts.toArray ? page.posts.toArray() : (page.posts || []);
@@ -13,8 +14,8 @@ const yearKeys = Object.keys(years).sort(function (a, b) { return b - a; });
 %>
 <div class="container archive">
   <header class="page-header">
-    <h1 class="px title-anim" aria-label="<%= title %>"><%- letter_spans(title, 'ch') %></h1>
-    <span class="badge badge--blue px"><%= __('archive.total_prefix') %> <%= total %> <%= __('archive.total_suffix') %></span>
+    <h1 class="px title-anim"<% if (translateTitle) { %> data-i18n-aria-label="archive.title"<% } %> aria-label="<%= title %>"><%- translateTitle ? ui_text('archive.title', 'ch') : letter_spans(title, 'ch') %></h1>
+    <span class="badge badge--blue px"><%- ui_text('archive.total_prefix') %> <%= total %> <%- ui_text('archive.total_suffix') %></span>
   </header>
   <% yearKeys.forEach(function (year) { %>
   <section class="archive-year panel">

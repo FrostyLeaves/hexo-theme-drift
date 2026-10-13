@@ -1,27 +1,29 @@
 <!DOCTYPE html>
-<% const bgSetup = background_setup(); %>
-<html lang="<%= config.language || 'zh-CN' %>" data-palette="<%= page_palette(page) %>" data-palette-pref="auto" data-background="<%= bgSetup.style %>" data-mode="<%= bgSetup.mode %>">
+<% const bgSetup = background_setup(); const languageSetup = language_setup(); %>
+<html lang="<%= languageSetup.default %>" data-palette="<%= page_palette(page) %>" data-palette-pref="auto" data-background="<%= bgSetup.style %>" data-mode="<%= bgSetup.mode === 'day' ? 'day' : 'night' %>" data-mode-pref="<%= bgSetup.mode %>">
 <%- partial('_partial/head') %>
 <%
 const juice = theme.juice || {};
+const cardEffect = card_effect();
 const textLevel = ['hero', 'titles', 'all'].includes(juice.text) ? juice.text : 'titles';
 const bodyClass = [
   is_home() && theme.hero && theme.hero.enabled ? 'has-hero' : '',
   juice.tilt === false ? '' : 'juice-tilt',
   juice.wobble === false ? '' : 'juice-wobble',
-  juice.foil === false ? '' : 'juice-foil',
+  cardEffect === 'none' ? '' : 'juice-foil',
   'text-' + textLevel
 ].filter(Boolean).join(' ');
 const backdrop = !theme.background || theme.background.enable !== false;
 %>
-<body class="<%= bodyClass %>">
-  <a class="skip-link" href="#main"><%= __('skip') %></a>
+<body class="<%= bodyClass %>" data-card-effect="<%= cardEffect %>">
+  <a class="skip-link" href="#main"><%- ui_text('skip') %></a>
   <div class="backdrop<%= backdrop ? '' : ' is-off' %>" id="backdrop" aria-hidden="true"><% if (backdrop) { %><canvas class="backdrop__canvas" id="backdrop-canvas"></canvas><canvas class="backdrop__snapshot" id="backdrop-snapshot"></canvas><% } %></div>
   <%- partial('_partial/header') %>
   <main id="main" class="site-main">
     <%- body %>
   </main>
   <%- partial('_partial/footer') %>
+  <%- js('js/language') %>
   <% if (backdrop) { %><%- js('js/background') %><% } %>
   <%- js('js/theme') %>
 </body>
