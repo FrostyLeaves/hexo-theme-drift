@@ -4,12 +4,20 @@ nav:
   categories: Categories
   tags: Tags
   archives: Archives
+language:
+  toggle: Language
+  name: English
+  short: EN
+pagination: Pagination
 hero:
   posts: posts
   categories: categories
   tags: tags
 post:
+  navigation: Post navigation
   toc: Contents
+  reading_progress: Reading progress
+  reading_hint: Drag the ruler · Click a chapter
   updated: Updated
   words: words
   minutes: min
@@ -44,6 +52,7 @@ background:
   ocean: Ocean
 mode:
   toggle: Day / night
+  auto: Auto
   day: Day
   night: Night
 error404:

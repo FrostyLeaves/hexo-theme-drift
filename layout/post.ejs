@@ -4,6 +4,9 @@ const licenseLinks = (theme.post && theme.post.license_links) || {};
 const licenseUrl = page.license ? licenseLinks[page.license] : null;
 %>
 <article class="post-layout<%= showToc ? ' has-toc' : '' %>" itemscope itemtype="https://schema.org/BlogPosting">
+  <% if (showToc) { %>
+  <div class="reading-mobile" hidden role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-i18n-aria-label="post.reading_progress" aria-label="<%= ui_label('post.reading_progress') %>"><span></span></div>
+  <% } %>
   <div class="post container">
     <header class="post-header">
       <h1 class="post-title px title-anim" itemprop="headline" aria-label="<%= page.title %>"><%- letter_spans(page.title, 'ch') %></h1>
@@ -12,20 +15,20 @@ const licenseUrl = page.license ? licenseLinks[page.license] : null;
 
     <% if (showToc) { %>
     <details class="toc-mobile panel">
-      <summary class="px"><%= __('post.toc') %></summary>
+      <summary class="px"><%- ui_text('post.toc') %><span class="toc-mobile__percent" data-reading-percent aria-hidden="true"></span></summary>
       <%- partial('_partial/toc') %>
     </details>
     <% } %>
 
     <div class="post-body panel">
-      <div class="post-content" itemprop="articleBody">
+      <div class="post-content" id="drift-post-content" itemprop="articleBody" lang="<%= page.lang && page.lang !== 'default' ? page.lang : language_setup().default %>">
         <%- page.content %>
       </div>
       <% if (page.license) { %>
         <p class="post-license">
-          <%= __('post.license_prefix') %>
+          <%- ui_text('post.license_prefix') %>
           <% if (licenseUrl) { %><a href="<%= licenseUrl %>" target="_blank" rel="license noopener"><%= page.license %></a><% } else { %><%= page.license %><% } %>
-          <%= __('post.license_suffix') %>
+          <%- ui_text('post.license_suffix') %>
         </p>
       <% } %>
     </div>
@@ -39,11 +42,11 @@ const licenseUrl = page.license ? licenseLinks[page.license] : null;
         </div>
       <% } %>
       <% if (page.prev || page.next) { %>
-      <nav class="post-nav" aria-label="<%= __('post.prev') %> / <%= __('post.next') %>">
+      <nav class="post-nav" data-i18n-aria-label="post.navigation" aria-label="<%= ui_label('post.navigation') %>">
         <% if (page.prev) { %>
           <a class="post-nav__item post-nav__prev card" data-tilt href="<%- url_for(page.prev.path) %>">
             <span class="card__inner">
-              <span class="post-nav__label px"><%= __('post.prev') %> · <%= date(page.prev.date, 'YYYY-MM-DD') %></span>
+              <span class="post-nav__label px"><%- ui_text('post.prev') %> · <%= date(page.prev.date, 'YYYY-MM-DD') %></span>
               <span class="post-nav__title"><%= page.prev.title %></span>
               <span class="card__foil" aria-hidden="true"></span>
             </span>
@@ -52,7 +55,7 @@ const licenseUrl = page.license ? licenseLinks[page.license] : null;
         <% if (page.next) { %>
           <a class="post-nav__item post-nav__next card" data-tilt href="<%- url_for(page.next.path) %>">
             <span class="card__inner">
-              <span class="post-nav__label px"><%= __('post.next') %> · <%= date(page.next.date, 'YYYY-MM-DD') %></span>
+              <span class="post-nav__label px"><%- ui_text('post.next') %> · <%= date(page.next.date, 'YYYY-MM-DD') %></span>
               <span class="post-nav__title"><%= page.next.title %></span>
               <span class="card__foil" aria-hidden="true"></span>
             </span>
@@ -67,7 +70,7 @@ const licenseUrl = page.license ? licenseLinks[page.license] : null;
 
   <% if (showToc) { %>
   <aside class="post-aside">
-    <%- partial('_partial/toc') %>
+    <%- partial('_partial/toc', { rail: true }) %>
   </aside>
   <% } %>
 </article>

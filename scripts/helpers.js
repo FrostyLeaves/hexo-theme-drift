@@ -1,6 +1,11 @@
 'use strict';
 
 const { stripHTML, escapeHTML } = require('hexo-util');
+const { cardEffect } = require('../lib/theme-options');
+
+hexo.extend.helper.register('card_effect', function () {
+  return cardEffect((this.theme.juice || {}).foil);
+});
 
 const CJK = /[㐀-䶿一-鿿豈-﫿぀-ヿ가-힯]/g;
 
@@ -103,21 +108,21 @@ const SCENES = ['sky', 'ocean'];
 /**
  * background_setup() -> { enable, style, styles, mode }
  * The scenes readers can cycle through (theme.background.styles, filtered to the ones the theme
- * ships), the default one (theme.background.style) and the default day/night mode.
+ * ships), the default one (theme.background.style) and the default mode preference.
  */
 hexo.extend.helper.register('background_setup', function () {
   const bg = (this.theme && this.theme.background) || {};
   let styles = Array.isArray(bg.styles) ? bg.styles.map(String).filter(name => SCENES.includes(name)) : SCENES.slice();
   if (!styles.length) styles = SCENES.slice();
   const style = styles.includes(bg.style) ? bg.style : styles[0];
-  const mode = bg.mode === 'day' ? 'day' : 'night';
+  const mode = ['auto', 'day', 'night'].includes(bg.mode) ? bg.mode : 'auto';
   return { enable: bg.enable !== false, style, styles, mode };
 });
 
 /** background_label(name) -> languages background.<name>, then the name. */
 hexo.extend.helper.register('background_label', function (name) {
   const key = 'background.' + name;
-  const text = this.__(key);
+  const text = this.ui_label(key);
   return text === key ? name : text;
 });
 
@@ -145,6 +150,6 @@ hexo.extend.helper.register('palette_label', function (name) {
   const entry = palettes[name] || {};
   if (entry.label) return String(entry.label);
   const key = 'palette.' + name;
-  const text = this.__(key);
+  const text = this.ui_label(key);
   return text === key ? name : text;
 });

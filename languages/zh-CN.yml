@@ -4,12 +4,20 @@ nav:
   categories: 分类
   tags: 标签
   archives: 归档
+language:
+  toggle: 切换语言
+  name: 中文
+  short: 中
+pagination: 翻页
 hero:
   posts: 篇文章
   categories: 个分类
   tags: 个标签
 post:
+  navigation: 文章导航
   toc: 目录
+  reading_progress: 阅读进度
+  reading_hint: 拖动刻度跳转 · 点击章节定位
   updated: 更新于
   words: 字
   minutes: 分钟
@@ -44,6 +52,7 @@ background:
   ocean: 海洋
 mode:
   toggle: 切换日夜
+  auto: 自动
   day: 日间
   night: 夜间
 error404:

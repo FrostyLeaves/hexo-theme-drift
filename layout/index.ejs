@@ -13,13 +13,13 @@ const subtitle = hero.subtitle || config.subtitle || config.description;
     <% } %>
     <% if (hero.stats !== false) { %>
     <ul class="hero__stats">
-      <li class="badge badge--blue px" data-count="<%= site.posts.length %>"><span class="badge__num"><%= site.posts.length %></span> <%= __('hero.posts') %></li>
-      <li class="badge badge--green px" data-count="<%= site.categories.length %>"><span class="badge__num"><%= site.categories.length %></span> <%= __('hero.categories') %></li>
-      <li class="badge badge--gold px" data-count="<%= site.tags.length %>"><span class="badge__num"><%= site.tags.length %></span> <%= __('hero.tags') %></li>
+      <li class="badge badge--blue px" data-count="<%= site.posts.length %>"><span class="badge__num"><%= site.posts.length %></span> <%- ui_text('hero.posts') %></li>
+      <li class="badge badge--green px" data-count="<%= site.categories.length %>"><span class="badge__num"><%= site.categories.length %></span> <%- ui_text('hero.categories') %></li>
+      <li class="badge badge--gold px" data-count="<%= site.tags.length %>"><span class="badge__num"><%= site.tags.length %></span> <%- ui_text('hero.tags') %></li>
     </ul>
     <% } %>
   </div>
-  <a class="hero__scroll" href="#posts" aria-label="<%= __('post.scroll_down') %>">
+  <a class="hero__scroll" href="#posts" data-i18n-aria-label="post.scroll_down" aria-label="<%= ui_label('post.scroll_down') %>">
     <svg viewBox="0 0 10 5" width="40" height="20" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="2" height="1"/><rect x="8" y="0" width="2" height="1"/><rect x="1" y="1" width="2" height="1"/><rect x="7" y="1" width="2" height="1"/><rect x="2" y="2" width="2" height="1"/><rect x="6" y="2" width="2" height="1"/><rect x="3" y="3" width="4" height="1"/><rect x="4" y="4" width="2" height="1"/></svg>
   </a>
 </section>

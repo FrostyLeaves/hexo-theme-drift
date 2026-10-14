@@ -87,7 +87,7 @@ hero:
 background:
   style: sky
   styles: [sky, ocean]
-  mode: night
+  mode: auto
   speed: 1
 palette:
   home: blue
@@ -101,25 +101,66 @@ The site's `_config.yml` also accepts overrides under `theme_config:`. For `them
 | Key | Purpose |
 | --- | --- |
 | `nav` | Navigation labels and paths; labels come from `languages/*.yml`. |
+| `i18n.enable / default / languages` | Interface language switcher, default, and available languages. |
 | `hero.enabled / title / subtitle / typing / stats / height` | Home-page opening, title, typing effect, counters, and height. |
 | `index.intro / excerpt_length` | Intro when the hero is disabled; card excerpt length. |
 | `post.toc / toc_max_depth / show_updated / reading_speed / license_links` | Contents, metadata, reading-time estimates, and license links. |
 | `palettes` | Colors and accent for each palette. |
 | `palette.home / post / pool / archive / category / tag / page / error` | Palette per page type. `post: auto` selects from `pool` using the first category. |
 | `background.enable / style / styles / mode / speed / fps / pixel_filter` | Sky/ocean, initial day/night mode, animation speed, frame cap, and pixel resolution. |
-| `juice.tilt / wobble / foil / text` | Card tilt, idle motion, sheen, and animated lettering. |
+| `juice.tilt / wobble / foil / text` | Card tilt, idle motion, hover reflection style, and animated lettering. |
 | `utterances` | GitHub-backed comments. |
 | `footer.start_year / links` | Copyright starting year and extra footer links. |
 | `favicon` | ICO, PNG, and Apple touch icons. |
 | `theme_svg / diagrams / webp` | Bundled build plugins. |
 
+### Interface languages
+
+The `中 / EN` header button switches the interface language and remembers the choice across reloads and pages. Chinese and English are available by default. The initial language follows the site's first `language`, or an explicit override:
+
+```yaml
+i18n:
+  enable: true
+  default: en
+  languages: [zh-CN, en]
+```
+
+Navigation, statistics, reading metadata, contents, copy buttons, footer, error pages, and appearance controls are translated. Post titles, article content, category names, and tag names remain author-provided content; they are not automatically translated. Use the post's `lang` front matter to identify its content language.
+
+Set `enable: false` to use only the default language and hide the switcher; offering a single language also hides it. To add a language, create `languages/<code>.yml` in the theme and add its code to `languages`. Define `language.name` and `language.short` for its native name and button abbreviation. Missing translations fall back to the English `default.yml`.
+
 ### Appearance and motion
 
-- `sky` and `ocean` each have day and night scenes. Header controls change the scene, mode, and palette; choices persist in the browser. Day/night is not selected from the system color scheme.
+- `sky` and `ocean` each have day and night scenes. Header controls change the scene, mode, and palette; choices persist in the browser. The mode button cycles through Auto → Day → Night; Auto responds to color-scheme changes immediately.
+- `background.mode` defaults to `auto` (follow the system), and also accepts `day` or `night`. Existing manual preferences in the browser take priority; select Auto to resume automatic switching. The mode button remains available when the animated background is disabled.
 - The default palettes are `blue`, `green`, `gold`, and `red`. Add a palette under `palettes`, define its label there or in `languages/`, and include its name in `palette.pool` for automatic post colors.
 - A single entry in `background.styles` hides the scene switch. Set `background.enable: false` for a static gradient, also used when WebGL is unavailable.
 - `juice.text` accepts `hero`, `titles` (default), or `all`. Set motion options to `false` to disable them. The theme respects reduced motion and pauses the background while the tab is hidden.
 - Day-mode colors live under `:root[data-mode="day"]` in `source/css/main.css`. Preserve the three `--color-*` diagram inputs when customizing tokens.
+
+Choose card finishes with `juice.foil`; `juice.tilt` controls card tilt independently. The shipped default is `pixel-glass`. For a Balatro-inspired negative, for example:
+
+```yaml
+juice:
+  tilt: true
+  foil: negative
+```
+
+| `juice.foil` | Effect |
+| --- | --- |
+| `foil` | Blue metallic foil with fine concentric highlights centered on the pointer. |
+| `holographic` | A pastel spectral lattice with triangular facets that shifts with the pointer. |
+| `polychrome` | Broad rainbow prism colors with a moving highlight. |
+| `negative` | A dark blue negative-style face, pale mint lettering and a cyan-violet sheen. |
+| `glass` | Soft glass highlights and diagonal reflection bands. |
+| `pixel-glass` | A square grid with staircase reflections that follow the pointer in 16-pixel steps. |
+| `none` | No finish. |
+
+The first four finishes take visual inspiration from Balatro's card editions, using original CSS suited to article cards. Highlights stay behind the text. Hovering or focusing a link activates the finish; leaving the card restores its normal appearance.
+
+![Foil, holographic, polychrome and negative finishes on Drift article cards](images/card-editions.png)
+
+Existing `foil: true` maps to `holographic`; `foil: false` maps to `none`. Missing or unknown values fall back to `holographic`. Finishes leave links interactive and are disabled on touch devices and when reduced motion is preferred. They do not add image downloads or a continuous rendering loop.
 
 ### Article front matter
 
@@ -139,6 +180,18 @@ license: CC BY 4.0
 ```
 
 Card summaries use `description`, then content before `<!-- more -->`, then the start of the article. Set `toc: false` or `comments: false` per article. Scene and day/night settings do not support front-matter overrides. Wide tables and code blocks scroll within the article.
+
+### Pixel reading ruler
+
+On desktop, contents and reading progress form a pixel ruler fixed to the right edge of the window, with interactions inspired by [PhotoCraft](https://getartcraft.com/apps/photocraft). Ticks and chapter labels sit directly on the backdrop, with space reserved beside the article. The ruler always shows the full article; hovering does not rescale the ticks or relocate chapters. Click a chapter to jump to it, or click and drag the ruler to seek. With the ruler focused, arrow keys move 1%, Page Up / Page Down move 10%, and Home / End move to the beginning or end of the body.
+
+Progress reaches 100% when the end of the article body enters the viewport; comments and the footer are excluded. The current chapter grows and highlights with a gentle letter sway. Position and size changes transition smoothly, and hover animation resumes from its existing phase. Colors follow the active palette and day/night mode. Long outlines scroll independently. Narrow screens retain the collapsible contents and percentage, with a pixel progress bar below the navigation header.
+
+When resizing or zooming crosses a layout breakpoint, the side ruler and top progress bar fade between layouts, while header labels smoothly collapse to icons. Pointer clicks leave no persistent focus outline; keyboard navigation retains visible focus indicators.
+
+The ruler uses `post.toc`, `post.toc_max_depth`, and each article's `toc: false`; disabling contents also disables reading progress. Letter animation follows `juice.text`: use `hero` to disable animation in the contents. The system's reduced-motion preference disables animation and smooth scrolling. With JavaScript disabled, ordinary chapter links remain available.
+
+![Pixel reading ruler](images/reading-ruler.jpg)
 
 ### Comments
 
@@ -370,7 +423,8 @@ Run `npm pack --dry-run` at the repository root to inspect package contents. Bef
 | --- | --- |
 | `layout/` | EJS templates and partials. |
 | `source/css/` | Layout, palettes, day/night tokens, and fonts. |
-| `source/js/theme.js` | Controls, card effects, reading interactions, and comments. |
+| `source/js/theme.js` | Controls, card effects, code copying, and comments. |
+| `source/js/reading-progress.js` | Body progress, chapter tracking, ruler dragging, and keyboard controls. |
 | `source/js/background.js` | WebGL sky/ocean scenes. |
 | `scripts/` | Hexo helpers, filters, and build plugins. |
 | `lib/theme-svg-contract.js` | Canonical SVG tokens and validation. |

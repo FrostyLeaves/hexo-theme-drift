@@ -1,5 +1,5 @@
 /* Drift theme — palette cycling, header state, hero typing and counters, card tilt and foil,
-   TOC scroll-spy, code copy, comments. Plain browser JavaScript, no dependencies.
+   Code copy, comments. The reading ruler lives in reading-progress.js. Plain browser JavaScript, no dependencies.
    The swirl backdrop lives in background.js and listens for the `drift:palette` event. */
 (function () {
   'use strict';
@@ -101,22 +101,28 @@
 
   /* ---------------------------------------------------------------- day / night */
   var MODE_KEY = 'drift-mode';
-  var modeDefault = bg.mode === 'day' ? 'day' : 'night';
+  var MODES = ['auto', 'day', 'night'];
+  var modeDefault = MODES.indexOf(bg.mode) >= 0 ? bg.mode : 'auto';
+  var systemMode = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
   var modeLabels = labels.modes || {};
   var THEME_COLOR = { night: '#191a1c', day: '#f0eee8' };
+  var modePref = storedMode();
   function storedMode() {
     var mode = null;
     try { mode = localStorage.getItem(MODE_KEY); } catch (e) { mode = null; }
-    return mode === 'day' || mode === 'night' ? mode : modeDefault;
+    return MODES.indexOf(mode) >= 0 ? mode : modeDefault;
   }
-  function applyMode(mode, animate) {
+  function applyMode(pref, animate) {
+    modePref = pref;
+    var mode = pref === 'auto' ? (systemMode && !systemMode.matches ? 'day' : 'night') : pref;
     root.setAttribute('data-mode', mode);
+    root.setAttribute('data-mode-pref', pref);
     var button = document.getElementById('mode-toggle');
     var label = document.getElementById('mode-label');
-    var text = modeLabels[mode] || mode;
+    var text = modeLabels[pref] || pref;
     if (label) label.textContent = text;
     if (button) {
-      var title = (labels.modeToggle || 'Day / night') + ': ' + text;
+      var title = (labels.modeToggle || 'Day / night') + ': ' + text + (pref === 'auto' ? ' · ' + (modeLabels[mode] || mode) : '');
       button.setAttribute('title', title);
       button.setAttribute('aria-label', title);
     }
@@ -124,25 +130,57 @@
     if (meta) meta.setAttribute('content', THEME_COLOR[mode]);
     syncComments(mode);
     try {
-      document.dispatchEvent(new CustomEvent('drift:mode', { detail: { mode: mode, animate: animate } }));
+      document.dispatchEvent(new CustomEvent('drift:mode', { detail: { mode: mode, pref: pref, animate: animate } }));
     } catch (e) { /* very old browsers keep the default */ }
   }
   function toggleMode() {
-    var next = storedMode() === 'day' ? 'night' : 'day';
+    var next = MODES[(MODES.indexOf(modePref) + 1) % MODES.length];
     try { localStorage.setItem(MODE_KEY, next); } catch (e) { /* ignore */ }
     applyMode(next, true);
   }
   function initMode() {
     var button = document.getElementById('mode-toggle');
     if (button) button.addEventListener('click', toggleMode);
-    applyMode(storedMode(), false);
+    if (systemMode) {
+      var onSystemModeChange = function () {
+        if (modePref === 'auto') applyMode('auto', true);
+      };
+      if (systemMode.addEventListener) systemMode.addEventListener('change', onSystemModeChange);
+      else if (systemMode.addListener) systemMode.addListener(onSystemModeChange);
+    }
+    applyMode(modePref, false);
   }
+
+  document.addEventListener('drift:language', function () {
+    labels = theme.labels || {};
+    sceneLabels = labels.scenes || {};
+    modeLabels = labels.modes || {};
+    applyPref(root.getAttribute('data-palette-pref') || 'auto');
+    if (scenes.length) applyScene(root.getAttribute('data-background') || sceneDefault, false);
+    applyMode(modePref, false);
+  });
 
   /* ---------------------------------------------------------------- header over hero */
   function initHeader() {
     var header = document.getElementById('site-header');
+    if (!header) return;
+    // Translated navigation can wrap; keep sticky contents and anchor offsets below it.
+    var measure = function () {
+      root.style.setProperty('--header-height', header.offsetHeight + 'px');
+      // scrollWidth retains the natural text width while a compact label is clipped to zero.
+      header.querySelectorAll('.palette-toggle__label, .scene-toggle__label').forEach(function (label) {
+        label.style.setProperty('--label-width', label.scrollWidth + 'px');
+      });
+    };
+    measure();
+    if ('ResizeObserver' in window) new ResizeObserver(measure).observe(header);
+    window.addEventListener('resize', measure);
+    ['drift:language', 'drift:palette', 'drift:mode', 'drift:background'].forEach(function (name) {
+      document.addEventListener(name, measure);
+    });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
     var hero = document.querySelector('.hero');
-    if (!header || !hero) return;
+    if (!hero) return;
     var update = function () {
       var threshold = hero.offsetHeight - header.offsetHeight;
       header.classList.toggle('is-scrolled', window.scrollY > threshold);
@@ -239,81 +277,19 @@
         card.style.setProperty('--ry', ((x - 0.5) * 2).toFixed(3));
         card.style.setProperty('--mx', (x * 100).toFixed(1) + '%');
         card.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+        // Pixel glass follows the pointer in whole tiles, keeping the reflections crisp.
+        card.style.setProperty('--px', (Math.round(x * rect.width / 16) * 16) + 'px');
+        card.style.setProperty('--py', (Math.round(y * rect.height / 16) * 16) + 'px');
       });
       card.addEventListener('pointerleave', reset);
       card.addEventListener('pointercancel', reset);
     });
   }
 
-  /* ---------------------------------------------------------------- TOC scroll-spy */
-  function initToc() {
-    var tocs = document.querySelectorAll('.toc');
-    if (!tocs.length) return;
-    var content = document.querySelector('.post-content');
-    if (!content) return;
-    var headings = Array.prototype.slice.call(content.querySelectorAll('h2[id], h3[id], h4[id]'));
-    if (!headings.length) return;
-
-    var links = Array.prototype.slice.call(document.querySelectorAll('.toc .toc-list-link'));
-    var linksById = {};
-    links.forEach(function (link) {
-      var hash = link.getAttribute('href') || '';
-      var id = hash.slice(hash.indexOf('#') + 1);
-      try { id = decodeURIComponent(id); } catch (e) { /* keep raw */ }
-      (linksById[id] = linksById[id] || []).push(link);
-    });
-
-    var headerOffset = 96;
-    var current = null;
-    var ticking = false;
-
-    function pick() {
-      var y = window.scrollY + headerOffset;
-      var atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
-      var active = null;
-      if (atBottom) {
-        active = headings[headings.length - 1];
-      } else {
-        for (var i = 0; i < headings.length; i++) {
-          var top = headings[i].getBoundingClientRect().top + window.scrollY;
-          if (top <= y) active = headings[i];
-          else break;
-        }
-      }
-      var id = active ? active.id : null;
-      if (id === current) return;
-      current = id;
-      links.forEach(function (link) { link.classList.remove('is-active'); });
-      if (id && linksById[id]) {
-        linksById[id].forEach(function (link) {
-          link.classList.add('is-active');
-          var box = link.closest('.toc');
-          if (box && box.scrollHeight > box.clientHeight) {
-            var top = link.offsetTop - box.offsetTop;
-            if (top < box.scrollTop + 24 || top > box.scrollTop + box.clientHeight - 48) {
-              box.scrollTop = Math.max(0, top - box.clientHeight / 2);
-            }
-          }
-        });
-      }
-    }
-    function onScroll() {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(function () { ticking = false; pick(); });
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    window.addEventListener('load', pick);
-    pick();
-  }
-
   /* ---------------------------------------------------------------- code copy */
   function initCodeCopy() {
     var figures = document.querySelectorAll('figure.highlight');
     if (!figures.length) return;
-    var copyLabel = labels.copy || 'Copy';
-    var copiedLabel = labels.copied || 'Copied';
     function fallbackCopy(text) {
       var area = document.createElement('textarea');
       area.value = text;
@@ -333,15 +309,19 @@
       var button = document.createElement('button');
       button.type = 'button';
       button.className = 'code-copy';
-      button.textContent = copyLabel;
-      button.setAttribute('aria-label', copyLabel);
+      button.textContent = labels.copy || 'Copy';
+      button.setAttribute('data-i18n', 'post.copy');
+      button.setAttribute('data-i18n-aria-label', 'post.copy');
+      button.setAttribute('aria-label', labels.copy || 'Copy');
       button.addEventListener('click', function () {
         var text = pre.innerText.replace(/\n$/, '');
         var done = function () {
-          button.textContent = copiedLabel;
+          button.textContent = labels.copied || 'Copied';
+          button.setAttribute('data-i18n', 'post.copied');
           button.classList.add('is-copied');
           setTimeout(function () {
-            button.textContent = copyLabel;
+            button.textContent = labels.copy || 'Copy';
+            button.setAttribute('data-i18n', 'post.copy');
             button.classList.remove('is-copied');
           }, 1600);
         };
@@ -369,6 +349,14 @@
     var label = box.getAttribute('data-label');
     if (label) script.setAttribute('label', label);
     script.setAttribute('theme', commentsTheme(root.getAttribute('data-mode')));
+    // The mode may change while the async script or lazy iframe is still loading.
+    window.addEventListener('message', function onCommentsReady(event) {
+      if (event.origin !== 'https://utteranc.es' || !event.data || event.data.type !== 'resize') return;
+      var frame = box.querySelector('.utterances-frame');
+      if (!frame || event.source !== frame.contentWindow) return;
+      window.removeEventListener('message', onCommentsReady);
+      syncComments(root.getAttribute('data-mode'));
+    });
     box.appendChild(script);
   }
   function syncComments(mode) {
@@ -387,7 +375,6 @@
     initCounters();
     initTitles();
     initTilt();
-    initToc();
     initCodeCopy();
     initComments();
   }

@@ -12,32 +12,36 @@ const bg = background_setup();
 <header class="site-header" id="site-header">
   <div class="site-header__inner">
     <a class="site-brand px" href="<%- url_for('/') %>" aria-label="<%= config.title %>"><%- letter_spans(config.title, 'ch') %></a>
-    <nav class="site-nav" aria-label="<%= __('nav.home') %>">
+    <nav class="site-nav" data-i18n-aria-label="nav.home" aria-label="<%= ui_label('nav.home') %>">
       <% for (const key in theme.nav) { %>
-        <a class="btn btn--nav px" href="<%- url_for(theme.nav[key]) %>"<%- navActive(key) ? ' aria-current="page"' : '' %>><%= __('nav.' + key) %></a>
+        <a class="btn btn--nav px" href="<%- url_for(theme.nav[key]) %>"<%- navActive(key) ? ' aria-current="page"' : '' %>><%- ui_text('nav.' + key) %></a>
       <% } %>
-      <button class="palette-toggle" id="palette-toggle" type="button" aria-label="<%= __('palette.toggle') %>: <%= __('palette.auto') %> · <%= palette_label(currentPalette) %>" title="<%= __('palette.toggle') %>: <%= __('palette.auto') %> · <%= palette_label(currentPalette) %>">
+      <div class="site-controls">
+      <button class="palette-toggle" id="palette-toggle" type="button" aria-label="<%= ui_label('palette.toggle') %>: <%= ui_label('palette.auto') %> · <%= palette_label(currentPalette) %>" title="<%= ui_label('palette.toggle') %>: <%= ui_label('palette.auto') %> · <%= palette_label(currentPalette) %>">
         <span class="palette-toggle__disc" aria-hidden="true"></span>
-        <span class="palette-toggle__label px" id="palette-label"><%= __('palette.auto') %></span>
+        <span class="palette-toggle__label px" id="palette-label"><%- ui_text('palette.auto') %></span>
       </button>
       <% if (bg.enable && bg.styles.length > 1) { %>
-      <button class="scene-toggle" id="background-toggle" type="button" aria-label="<%= __('background.toggle') %>" title="<%= __('background.toggle') %>: <%= background_label(bg.style) %>">
+      <button class="scene-toggle" id="background-toggle" type="button" aria-label="<%= ui_label('background.toggle') %>" title="<%= ui_label('background.toggle') %>: <%= background_label(bg.style) %>">
         <span class="scene-toggle__icon" aria-hidden="true">
           <svg class="scene-icon scene-icon--sky" viewBox="0 0 12 12" shape-rendering="crispEdges" fill="currentColor"><rect x="2" y="0" width="1" height="5"/><rect x="0" y="2" width="5" height="1"/><rect x="1" y="1" width="1" height="1"/><rect x="3" y="1" width="1" height="1"/><rect x="1" y="3" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/><rect x="6" y="5" width="4" height="1"/><rect x="5" y="6" width="6" height="1"/><rect x="4" y="7" width="8" height="1"/><rect x="3" y="8" width="9" height="2"/></svg>
           <svg class="scene-icon scene-icon--ocean" viewBox="0 0 12 12" shape-rendering="crispEdges" fill="currentColor"><rect x="1" y="2" width="3" height="1"/><rect x="6" y="2" width="3" height="1"/><rect x="0" y="3" width="1" height="1"/><rect x="4" y="3" width="2" height="1"/><rect x="9" y="3" width="2" height="1"/><rect x="1" y="6" width="3" height="1"/><rect x="6" y="6" width="3" height="1"/><rect x="0" y="7" width="1" height="1"/><rect x="4" y="7" width="2" height="1"/><rect x="9" y="7" width="2" height="1"/><rect x="1" y="10" width="3" height="1"/><rect x="6" y="10" width="3" height="1"/><rect x="0" y="11" width="1" height="1"/><rect x="4" y="11" width="2" height="1"/><rect x="9" y="11" width="2" height="1"/></svg>
         </span>
-        <span class="scene-toggle__label px" id="background-label"><%= background_label(bg.style) %></span>
+        <span class="scene-toggle__label px" id="background-label"><%- ui_text('background.' + bg.style) %></span>
       </button>
       <% } %>
-      <% if (bg.enable) { %>
-      <button class="scene-toggle mode-toggle" id="mode-toggle" type="button" aria-label="<%= __('mode.toggle') %>" title="<%= __('mode.toggle') %>: <%= __('mode.' + bg.mode) %>">
+      <button class="scene-toggle mode-toggle" id="mode-toggle" type="button" aria-label="<%= ui_label('mode.toggle') %>" title="<%= ui_label('mode.toggle') %>: <%= ui_label('mode.' + bg.mode) %>">
         <span class="scene-toggle__icon" aria-hidden="true">
+          <svg class="mode-icon mode-icon--auto" viewBox="0 0 12 12" shape-rendering="crispEdges" fill="currentColor"><rect x="1" y="1" width="10" height="1"/><rect x="0" y="2" width="1" height="5"/><rect x="11" y="2" width="1" height="5"/><rect x="1" y="7" width="10" height="1"/><rect x="5" y="8" width="2" height="2"/><rect x="3" y="10" width="6" height="1"/></svg>
           <svg class="mode-icon mode-icon--night" viewBox="0 0 12 12" shape-rendering="crispEdges" fill="currentColor"><rect x="4" y="1" width="4" height="1"/><rect x="3" y="2" width="2" height="1"/><rect x="2" y="3" width="2" height="2"/><rect x="2" y="5" width="2" height="2"/><rect x="2" y="7" width="2" height="2"/><rect x="3" y="9" width="2" height="1"/><rect x="4" y="10" width="4" height="1"/><rect x="8" y="9" width="2" height="1"/><rect x="8" y="2" width="2" height="1"/></svg>
           <svg class="mode-icon mode-icon--day" viewBox="0 0 12 12" shape-rendering="crispEdges" fill="currentColor"><rect x="4" y="4" width="4" height="4"/><rect x="5" y="0" width="2" height="2"/><rect x="5" y="10" width="2" height="2"/><rect x="0" y="5" width="2" height="2"/><rect x="10" y="5" width="2" height="2"/><rect x="1" y="1" width="2" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="9" y="1" width="2" height="1"/><rect x="10" y="2" width="1" height="1"/><rect x="1" y="9" width="1" height="1"/><rect x="1" y="10" width="2" height="1"/><rect x="10" y="9" width="1" height="1"/><rect x="9" y="10" width="2" height="1"/></svg>
         </span>
-        <span class="scene-toggle__label px" id="mode-label"><%= __('mode.' + bg.mode) %></span>
+        <span class="scene-toggle__label px" id="mode-label"><%- ui_text('mode.' + bg.mode) %></span>
       </button>
+      <% if (language_setup().languages.length > 1) { %>
+      <button class="language-toggle px" id="language-toggle" type="button" title="<%= ui_label('language.toggle') %>" aria-label="<%= ui_label('language.toggle') %>"><%- ui_text('language.short') %></button>
       <% } %>
+      </div>
     </nav>
   </div>
 </header>

@@ -12,7 +12,7 @@ const years = startYear && startYear < thisYear ? startYear + '–' + thisYear :
         <a href="<%= theme.footer.links[name] %>" target="_blank" rel="noopener"><%= name %></a>
       <% } } %>
       <% if (config.feed && config.feed.path) { %><a href="<%- url_for(config.feed.path) %>">RSS</a><% } %>
-      <a href="https://hexo.io" target="_blank" rel="noopener"><%= __('footer.powered') %></a>
+      <a href="https://hexo.io" target="_blank" rel="noopener"><%- ui_text('footer.powered') %></a>
     </span>
   </div>
 </footer>

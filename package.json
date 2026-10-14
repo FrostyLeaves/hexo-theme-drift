@@ -33,6 +33,7 @@
     "sharp": "^0.35.5"
   },
   "scripts": {
+    "test": "node --test test/theme-mode.test.js test/theme-options.test.js test/language.test.js test/reading-progress.test.js test/background.test.js",
     "check:svg": "node tools/check-theme-svg.js",
     "font": "python tools/make-pixel-font.py",
     "favicon": "python tools/make-favicon.py"

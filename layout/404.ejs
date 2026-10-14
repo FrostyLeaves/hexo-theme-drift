@@ -2,9 +2,9 @@
   <div class="error-card card card--error" data-tilt>
     <div class="card__inner">
       <p class="error-page__code px">404</p>
-      <h1 class="px"><%= __('error404.title') %></h1>
-      <p><%= __('error404.description') %></p>
-      <p class="error-page__actions"><a class="btn btn--accent px" href="<%- url_for('/') %>"><%= __('error404.home') %></a></p>
+      <h1 class="px"><%- ui_text('error404.title') %></h1>
+      <p><%- ui_text('error404.description') %></p>
+      <p class="error-page__actions"><a class="btn btn--accent px" href="<%- url_for('/') %>"><%- ui_text('error404.home') %></a></p>
       <span class="card__foil" aria-hidden="true"></span>
     </div>
   </div>
