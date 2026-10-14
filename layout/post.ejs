@@ -4,6 +4,9 @@ const licenseLinks = (theme.post && theme.post.license_links) || {};
 const licenseUrl = page.license ? licenseLinks[page.license] : null;
 %>
 <article class="post-layout<%= showToc ? ' has-toc' : '' %>" itemscope itemtype="https://schema.org/BlogPosting">
+  <% if (showToc) { %>
+  <div class="reading-mobile" hidden role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-i18n-aria-label="post.reading_progress" aria-label="<%= ui_label('post.reading_progress') %>"><span></span></div>
+  <% } %>
   <div class="post container">
     <header class="post-header">
       <h1 class="post-title px title-anim" itemprop="headline" aria-label="<%= page.title %>"><%- letter_spans(page.title, 'ch') %></h1>
@@ -12,13 +15,13 @@ const licenseUrl = page.license ? licenseLinks[page.license] : null;
 
     <% if (showToc) { %>
     <details class="toc-mobile panel">
-      <summary class="px"><%- ui_text('post.toc') %></summary>
+      <summary class="px"><%- ui_text('post.toc') %><span class="toc-mobile__percent" data-reading-percent aria-hidden="true"></span></summary>
       <%- partial('_partial/toc') %>
     </details>
     <% } %>
 
     <div class="post-body panel">
-      <div class="post-content" itemprop="articleBody" lang="<%= page.lang && page.lang !== 'default' ? page.lang : language_setup().default %>">
+      <div class="post-content" id="drift-post-content" itemprop="articleBody" lang="<%= page.lang && page.lang !== 'default' ? page.lang : language_setup().default %>">
         <%- page.content %>
       </div>
       <% if (page.license) { %>
@@ -67,7 +70,7 @@ const licenseUrl = page.license ? licenseLinks[page.license] : null;
 
   <% if (showToc) { %>
   <aside class="post-aside">
-    <%- partial('_partial/toc') %>
+    <%- partial('_partial/toc', { rail: true }) %>
   </aside>
   <% } %>
 </article>

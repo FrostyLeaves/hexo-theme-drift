@@ -16,6 +16,8 @@ hero:
 post:
   navigation: Post navigation
   toc: Contents
+  reading_progress: Reading progress
+  reading_hint: Drag the ruler · Click a chapter
   updated: Updated
   words: words
   minutes: min

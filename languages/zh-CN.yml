@@ -16,6 +16,8 @@ hero:
 post:
   navigation: 文章导航
   toc: 目录
+  reading_progress: 阅读进度
+  reading_hint: 拖动刻度跳转 · 点击章节定位
   updated: 更新于
   words: 字
   minutes: 分钟

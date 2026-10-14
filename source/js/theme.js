@@ -1,5 +1,5 @@
 /* Drift theme — palette cycling, header state, hero typing and counters, card tilt and foil,
-   TOC scroll-spy, code copy, comments. Plain browser JavaScript, no dependencies.
+   Code copy, comments. The reading ruler lives in reading-progress.js. Plain browser JavaScript, no dependencies.
    The swirl backdrop lives in background.js and listens for the `drift:palette` event. */
 (function () {
   'use strict';
@@ -165,13 +165,20 @@
     var header = document.getElementById('site-header');
     if (!header) return;
     // Translated navigation can wrap; keep sticky contents and anchor offsets below it.
-    var measure = function () { root.style.setProperty('--header-height', header.offsetHeight + 'px'); };
+    var measure = function () {
+      root.style.setProperty('--header-height', header.offsetHeight + 'px');
+      // scrollWidth retains the natural text width while a compact label is clipped to zero.
+      header.querySelectorAll('.palette-toggle__label, .scene-toggle__label').forEach(function (label) {
+        label.style.setProperty('--label-width', label.scrollWidth + 'px');
+      });
+    };
     measure();
     if ('ResizeObserver' in window) new ResizeObserver(measure).observe(header);
-    else {
-      window.addEventListener('resize', measure);
-      document.addEventListener('drift:language', measure);
-    }
+    window.addEventListener('resize', measure);
+    ['drift:language', 'drift:palette', 'drift:mode', 'drift:background'].forEach(function (name) {
+      document.addEventListener(name, measure);
+    });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
     var hero = document.querySelector('.hero');
     if (!hero) return;
     var update = function () {
@@ -279,70 +286,6 @@
     });
   }
 
-  /* ---------------------------------------------------------------- TOC scroll-spy */
-  function initToc() {
-    var tocs = document.querySelectorAll('.toc');
-    if (!tocs.length) return;
-    var content = document.querySelector('.post-content');
-    if (!content) return;
-    var headings = Array.prototype.slice.call(content.querySelectorAll('h2[id], h3[id], h4[id]'));
-    if (!headings.length) return;
-
-    var links = Array.prototype.slice.call(document.querySelectorAll('.toc .toc-list-link'));
-    var linksById = {};
-    links.forEach(function (link) {
-      var hash = link.getAttribute('href') || '';
-      var id = hash.slice(hash.indexOf('#') + 1);
-      try { id = decodeURIComponent(id); } catch (e) { /* keep raw */ }
-      (linksById[id] = linksById[id] || []).push(link);
-    });
-
-    var current = null;
-    var ticking = false;
-
-    function pick() {
-      var header = document.getElementById('site-header');
-      var headerOffset = header ? header.offsetHeight + 32 : 96;
-      var y = window.scrollY + headerOffset;
-      var atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
-      var active = null;
-      if (atBottom) {
-        active = headings[headings.length - 1];
-      } else {
-        for (var i = 0; i < headings.length; i++) {
-          var top = headings[i].getBoundingClientRect().top + window.scrollY;
-          if (top <= y) active = headings[i];
-          else break;
-        }
-      }
-      var id = active ? active.id : null;
-      if (id === current) return;
-      current = id;
-      links.forEach(function (link) { link.classList.remove('is-active'); });
-      if (id && linksById[id]) {
-        linksById[id].forEach(function (link) {
-          link.classList.add('is-active');
-          var box = link.closest('.toc');
-          if (box && box.scrollHeight > box.clientHeight) {
-            var top = link.offsetTop - box.offsetTop;
-            if (top < box.scrollTop + 24 || top > box.scrollTop + box.clientHeight - 48) {
-              box.scrollTop = Math.max(0, top - box.clientHeight / 2);
-            }
-          }
-        });
-      }
-    }
-    function onScroll() {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(function () { ticking = false; pick(); });
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    window.addEventListener('load', pick);
-    pick();
-  }
-
   /* ---------------------------------------------------------------- code copy */
   function initCodeCopy() {
     var figures = document.querySelectorAll('figure.highlight');
@@ -432,7 +375,6 @@
     initCounters();
     initTitles();
     initTilt();
-    initToc();
     initCodeCopy();
     initComments();
   }

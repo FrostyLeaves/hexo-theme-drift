@@ -26,5 +26,6 @@ const backdrop = !theme.background || theme.background.enable !== false;
   <%- js('js/language') %>
   <% if (backdrop) { %><%- js('js/background') %><% } %>
   <%- js('js/theme') %>
+  <% if (is_post() && theme.post && theme.post.toc && page.toc !== false) { %><%- js('js/reading-progress') %><% } %>
 </body>
 </html>

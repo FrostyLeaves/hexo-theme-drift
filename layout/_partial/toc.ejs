@@ -5,8 +5,28 @@ const tocHtml = toc(page.content, {
   min_depth: 2,
   max_depth: (theme.post && theme.post.toc_max_depth) || 3
 });
+const isRail = typeof rail !== 'undefined' && rail;
 %>
-<% if (tocHtml) { %>
+<% if (isRail) { %>
+<nav class="reading-rail" data-i18n-aria-label="post.toc" aria-label="<%= ui_label('post.toc') %>">
+  <div class="reading-rail__head px">
+    <span><%- ui_text('post.toc') %></span>
+    <span class="reading-rail__percent" data-reading-percent aria-hidden="true">000%</span>
+  </div>
+  <div class="reading-rail__stage">
+    <div class="reading-rail__chapters"><%- tocHtml %></div>
+    <div class="reading-rail__ruler" role="scrollbar" tabindex="0" aria-controls="drift-post-content" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-i18n-aria-label="post.reading_progress" aria-label="<%= ui_label('post.reading_progress') %>">
+      <div class="reading-rail__ticks" aria-hidden="true">
+        <% for (let tick = 0; tick <= 100; tick++) { %>
+        <span class="reading-rail__tick<%= tick % 10 === 0 ? ' is-major' : '' %>" style="top: <%= tick %>%"><% if (tick % 10 === 0) { %><b><%= tick %></b><% } %></span>
+        <% } %>
+      </div>
+      <span class="reading-rail__cursor" aria-hidden="true"></span>
+    </div>
+  </div>
+  <div class="reading-rail__hint"><%- ui_text('post.reading_hint') %></div>
+</nav>
+<% } else if (tocHtml) { %>
 <nav class="toc panel" data-i18n-aria-label="post.toc" aria-label="<%= ui_label('post.toc') %>">
   <div class="toc__title px"><%- ui_text('post.toc') %></div>
   <%- tocHtml %>

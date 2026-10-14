@@ -472,6 +472,7 @@
   window.addEventListener('resize', function () {
     resize();
     if (reduced()) still();
+    else draw(); // Resizing clears WebGL's buffer; refill it before this event can paint.
   });
 
   document.addEventListener('visibilitychange', function () {

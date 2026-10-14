@@ -181,6 +181,18 @@ license: CC BY 4.0
 
 卡牌摘要依次取 `description`、`<!-- more -->` 前的内容、文章开头。单篇文章可用 `toc: false` 或 `comments: false` 关闭目录和评论。背景场景与昼夜不支持 front matter 覆盖。宽表格和代码块在文章内部横向滚动。
 
+### 像素阅读进度尺
+
+桌面文章页将目录与阅读进度合为一条固定贴在窗口右侧的像素刻度尺，交互参考 [PhotoCraft](https://getartcraft.com/apps/photocraft)。刻度和章节文字直接浮于背景上，正文为它预留空间。刻度始终展示全篇进度，悬停不会缩放刻度或改变章节位置。点击章节可跳转，点击或拖动刻度可定位正文进度。刻度获得焦点后，方向键调整 1%，Page Up / Page Down 调整 10%，Home / End 跳到正文起点或终点。
+
+进度按正文计算，正文末尾进入视口即为 100%，评论和页脚不计入。当前章节会放大高亮，并带有逐字轻微摆动；章节位置和字号变化带有连续过渡，悬停动效从原有相位继续播放。配色跟随当前色板及日夜模式。长目录可独立滚动。窄屏保留折叠目录和百分比，并在导航栏下显示像素进度条。
+
+调整窗口或缩放页面跨越布局断点时，侧边刻度尺与顶部进度条会淡入淡出，顶栏按钮文字平滑收起为图标。鼠标点击不会保留焦点框，键盘导航仍显示焦点提示。
+
+沿用 `post.toc`、`post.toc_max_depth` 和单篇 `toc: false` 配置；关闭目录也会关闭进度尺。文字动效跟随 `juice.text`，设为 `hero` 可关闭目录文字动效。系统开启「减少动态效果」时，关闭动效及平滑滚动。关闭 JavaScript 时保留普通章节链接。
+
+![像素阅读进度尺](images/reading-ruler.jpg)
+
 ### 评论
 
 在用于评论的仓库安装 [Utterances](https://utteranc.es/)，然后配置：
@@ -411,7 +423,8 @@ npm run check:svg
 | --- | --- |
 | `layout/` | EJS 页面模板与局部模板。 |
 | `source/css/` | 布局、调色板、昼夜令牌和字体。 |
-| `source/js/theme.js` | 切换按钮、卡牌动效、阅读交互和评论。 |
+| `source/js/theme.js` | 切换按钮、卡牌动效、代码复制和评论。 |
+| `source/js/reading-progress.js` | 正文进度、目录定位、刻度拖动和键盘操作。 |
 | `source/js/background.js` | WebGL 天空与海洋场景。 |
 | `scripts/` | Hexo 辅助函数、过滤器与构建插件。 |
 | `lib/theme-svg-contract.js` | SVG 权威令牌与校验规则。 |

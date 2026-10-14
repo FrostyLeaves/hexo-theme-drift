@@ -181,6 +181,18 @@ license: CC BY 4.0
 
 Card summaries use `description`, then content before `<!-- more -->`, then the start of the article. Set `toc: false` or `comments: false` per article. Scene and day/night settings do not support front-matter overrides. Wide tables and code blocks scroll within the article.
 
+### Pixel reading ruler
+
+On desktop, contents and reading progress form a pixel ruler fixed to the right edge of the window, with interactions inspired by [PhotoCraft](https://getartcraft.com/apps/photocraft). Ticks and chapter labels sit directly on the backdrop, with space reserved beside the article. The ruler always shows the full article; hovering does not rescale the ticks or relocate chapters. Click a chapter to jump to it, or click and drag the ruler to seek. With the ruler focused, arrow keys move 1%, Page Up / Page Down move 10%, and Home / End move to the beginning or end of the body.
+
+Progress reaches 100% when the end of the article body enters the viewport; comments and the footer are excluded. The current chapter grows and highlights with a gentle letter sway. Position and size changes transition smoothly, and hover animation resumes from its existing phase. Colors follow the active palette and day/night mode. Long outlines scroll independently. Narrow screens retain the collapsible contents and percentage, with a pixel progress bar below the navigation header.
+
+When resizing or zooming crosses a layout breakpoint, the side ruler and top progress bar fade between layouts, while header labels smoothly collapse to icons. Pointer clicks leave no persistent focus outline; keyboard navigation retains visible focus indicators.
+
+The ruler uses `post.toc`, `post.toc_max_depth`, and each article's `toc: false`; disabling contents also disables reading progress. Letter animation follows `juice.text`: use `hero` to disable animation in the contents. The system's reduced-motion preference disables animation and smooth scrolling. With JavaScript disabled, ordinary chapter links remain available.
+
+![Pixel reading ruler](images/reading-ruler.jpg)
+
 ### Comments
 
 Install [Utterances](https://utteranc.es/) on the repository used for comments:
@@ -411,7 +423,8 @@ Run `npm pack --dry-run` at the repository root to inspect package contents. Bef
 | --- | --- |
 | `layout/` | EJS templates and partials. |
 | `source/css/` | Layout, palettes, day/night tokens, and fonts. |
-| `source/js/theme.js` | Controls, card effects, reading interactions, and comments. |
+| `source/js/theme.js` | Controls, card effects, code copying, and comments. |
+| `source/js/reading-progress.js` | Body progress, chapter tracking, ruler dragging, and keyboard controls. |
 | `source/js/background.js` | WebGL sky/ocean scenes. |
 | `scripts/` | Hexo helpers, filters, and build plugins. |
 | `lib/theme-svg-contract.js` | Canonical SVG tokens and validation. |
