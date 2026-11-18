@@ -143,3 +143,12 @@ webp:
   min_size: 30720           # bytes; smaller originals are left alone
   extensions: [jpg, jpeg, png]
   exclude: []               # regular expressions matched against the output path; favicons are always skipped
+
+# Optional Umami analytics (Cloud or self-hosted). No requests when disabled.
+analytics:
+  umami:
+    enabled: false
+    website_id:               # public website UUID, never an API key
+    script_url:               # HTTPS tracker URL supplied by your Umami instance
+    allowed_origins: []       # exact HTTPS origins; empty = site url origin
+    path:                     # path boundary; empty = site root (e.g. /blog/)

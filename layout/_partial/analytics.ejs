@@ -1,0 +1,4 @@
+<% const umami = umami_setup(); if (umami) { %>
+<script type="application/json" id="drift-umami-config"><%- theme_json(umami) %></script>
+<%- js('js/analytics') %>
+<% } %>

@@ -449,3 +449,30 @@ python tools/make-favicon.py --star '#009dff'
 ## Credits and license
 
 Theme code is [MIT](../LICENSE). [Fusion Pixel](../source/fonts/FusionPixel-LICENSES.txt) and [Maple Mono](../source/fonts/OFL.txt) subsets retain SIL OFL 1.1 licenses. The visual direction is inspired by Balatro; no game assets are included. The theme uses EJS, plain CSS, and browser JavaScript, without jQuery or an icon font.
+
+## Umami analytics
+
+Drift supports Umami Cloud and self-hosted Umami (v2/v3), disabled by default. Umami and its database run independently; Hexo only adds the browser integration.
+
+Configure the site's `_config.drift.yml`, not files under `node_modules`:
+
+```yaml
+analytics:
+  umami:
+    enabled: false # Enable only after entering real settings.
+    website_id: # Public Umami website UUID, never an API key.
+    script_url: # HTTPS tracker URL supplied by Umami.
+    allowed_origins:
+      - https://example.com
+    path: /blog
+```
+
+Origins include the scheme and optional port; wildcards are not supported. An empty list uses the Hexo `url` origin. An empty path uses Hexo `root`, or the path in `url` when `root` is absent. `/blog` matches `/blog` and its descendants, not `/blogger`. The tracker URL must use HTTPS without credentials, a query string or a fragment.
+
+Explicitly list the primary origin when sharing configuration with a mirror. Both the build's Hexo `url` and the browser's actual origin/path are checked. Also disable the integration in mirror build overrides. Disabled, incomplete and localhost configurations do not load the tracker.
+
+This first version records one pageview only. It does not automatically record clicks, searches, scrolling, code copying or user identifiers. It disables automatic tracker initialization with `data-auto-track="false"`, then sends one manual pageview. The event's URL contains only the path, and its referrer contains only the origin. Queries and fragments are omitted, which also limits UTM attribution and referrer-page detail. Titles are still sent: keep personal information out of titles and paths. The service can still observe network information such as IP addresses; configure its privacy and retention policies separately.
+
+Remove any other Umami integration before enabling this one to avoid competing scripts or duplicate pageviews. Tracker failures do not prevent reading. Public view counters and backend API credentials are outside the scope of the theme.
+
+After deployment, verify a primary-site visit in Umami's realtime dashboard and verify that mirror/local pages send no analytics requests. Without real service settings, integration tests cannot establish that events were stored by Umami.

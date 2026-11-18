@@ -449,3 +449,30 @@ python tools/make-favicon.py --star '#009dff'
 ## 致谢与许可证
 
 主题代码采用 [MIT](../LICENSE)。[缝合像素字体](../source/fonts/FusionPixel-LICENSES.txt) 与 [Maple Mono](../source/fonts/OFL.txt) 子集保留 SIL OFL 1.1 许可证。视觉方向受 Balatro 启发，不含游戏资源。主题使用 EJS、原生 CSS 与浏览器 JavaScript，不依赖 jQuery 或图标字体。
+
+## Umami 访问统计
+
+Drift 可接入 Umami Cloud 或自部署 Umami（v2/v3），默认关闭。统计服务和数据库独立运行，Hexo 只负责在页面中加载脚本。
+
+在站点 `_config.drift.yml` 中配置，不要改 `node_modules` 中的主题文件：
+
+```yaml
+analytics:
+  umami:
+    enabled: false # 填好真实配置后再改为 true
+    website_id: # Umami 中的网站 UUID，不能填 API 密钥
+    script_url: # Umami 提供的 HTTPS 脚本地址
+    allowed_origins:
+      - https://example.com
+    path: /blog
+```
+
+`allowed_origins` 是包含协议和可选端口的完整来源，不能使用通配符。空数组使用 Hexo `url` 的来源。`path` 为空时使用 Hexo `root`，未设置 `root` 时使用 `url` 的路径。`/blog` 同时匹配 `/blog` 和 `/blog/` 下的页面，不匹配 `/blogger`。脚本地址必须是无用户名、密码、查询参数和片段的 HTTPS URL。
+
+主站和镜像共用配置时，明确填写主站来源。构建时会检查 Hexo `url`，浏览器也会检查实际来源和路径。镜像构建应额外覆盖 `enabled: false`。本地预览、禁用或缺少有效配置时不会加载 Umami 脚本。
+
+初版仅记录页面浏览，不自动记录点击、搜索、滚动、代码复制或用户标识。通过 `data-auto-track="false"` 关闭 Umami 自动初始化，然后手动发送一次页面浏览。上报的页面 URL 只包含路径，来源只保留 origin，不携带 URL 查询参数和片段。这限制了 UTM 归因和来源页面细分。页面标题仍会上报，不应在标题或路径中放置个人信息。统计服务仍可从请求中看到 IP 等网络信息，使用者需自行配置服务的隐私和数据保留策略。
+
+已有其他 Umami 集成时请先移除，避免多份脚本竞争或重复计数。统计脚本不可用不会阻止页面阅读。Drift 不提供公共阅读次数，也不在主题中存放后台 API 密钥。
+
+上线后在 Umami 实时面板确认主站访问，再检查镜像和本地预览不会发出统计请求。没有真实服务端配置时只能验证页面集成，不能证明数据已经入库。
