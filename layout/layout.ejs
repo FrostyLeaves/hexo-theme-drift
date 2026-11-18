@@ -27,5 +27,6 @@ const backdrop = !theme.background || theme.background.enable !== false;
   <% if (backdrop) { %><%- js('js/background') %><% } %>
   <%- js('js/theme') %>
   <% if (is_post() && theme.post && theme.post.toc && page.toc !== false) { %><%- js('js/reading-progress') %><% } %>
+  <%- partial('_partial/analytics') %>
 </body>
 </html>
